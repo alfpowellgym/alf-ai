@@ -274,7 +274,7 @@
       <label>Negative prompt (optional)</label>
       <textarea id="negativePrompt" placeholder="blurry, low detail, warped face, bad anatomy, unrealistic skin, flicker..."></textarea>
       <div class="small" style="margin-top:8px;">
-        Use this to tell the AI what to avoid.
+        Used for image creation/editing. The selected video Space does not use a negative prompt input.
       </div>
     </div>
 
@@ -359,80 +359,51 @@
     </div>
 
     <div id="videoSettings" class="card hidden">
-      <div class="sectionTitle">Wan 2.2 video controls</div>
+      <div class="sectionTitle">Wataheeee video controls</div>
 
       <div class="noteBox" style="margin-bottom:14px;">
         In video mode:
-        <br>• 1st uploaded image = starting frame
-        <br>• 2nd uploaded image = optional ending frame
-        <br>• The video is generated using the public STCM Wan 2.2 Hugging Face Space
+        <br>• Upload 1 image
+        <br>• The video is generated using the public Hugging Face Space <b>sunfixer/Wataheeee</b>
       </div>
 
       <div class="grid2">
         <div>
-          <label>Duration</label>
-          <select id="videoSeconds">
-            <option value="2">2 seconds</option>
-            <option value="3">3 seconds</option>
-            <option value="4" selected>4 seconds</option>
-            <option value="5">5 seconds</option>
-            <option value="6">6 seconds</option>
-            <option value="8">8 seconds</option>
+          <label>Motion strength</label>
+          <select id="motionStrength">
+            <option value="80">80</option>
+            <option value="100">100</option>
+            <option value="120">120</option>
+            <option value="140" selected>140</option>
+            <option value="160">160</option>
+            <option value="180">180</option>
+            <option value="200">200</option>
           </select>
         </div>
 
         <div>
-          <label>Inference steps</label>
-          <select id="videoSteps">
-            <option value="4">4</option>
-            <option value="6" selected>6</option>
-            <option value="8">8</option>
-            <option value="10">10</option>
-          </select>
-        </div>
-
-        <div>
-          <label>Guidance scale</label>
-          <select id="videoGuidance">
-            <option value="1" selected>1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-          </select>
-        </div>
-
-        <div>
-          <label>Guidance scale 2</label>
-          <select id="videoGuidance2">
-            <option value="1" selected>1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-          </select>
-        </div>
-
-        <div>
-          <label>Video quality</label>
-          <select id="videoQuality">
-            <option value="5">5</option>
+          <label>Number of frames</label>
+          <select id="numFrames">
             <option value="6">6</option>
-            <option value="7" selected>7</option>
-            <option value="8">8</option>
+            <option value="7">7</option>
+            <option value="8" selected>8</option>
             <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
           </select>
         </div>
 
         <div>
-          <label>Seed</label>
-          <input id="videoSeed" type="number" value="42" />
+          <label>Quality / Steps</label>
+          <select id="videoSteps">
+            <option value="10">10</option>
+            <option value="12">12</option>
+            <option value="15" selected>15</option>
+            <option value="18">18</option>
+            <option value="20">20</option>
+          </select>
         </div>
-      </div>
-
-      <div style="margin-top:12px;">
-        <label class="check" style="display:flex;">
-          <input type="checkbox" id="videoRandomSeed" checked>
-          Randomise seed
-        </label>
       </div>
     </div>
 
@@ -443,7 +414,7 @@
     <div id="status">
       <div class="spinner"></div>
       <div id="statusText">Generating...</div>
-      <div class="small">Hugging Face ZeroGPU video can take a while if the Space is waking up or busy.</div>
+      <div class="small">Public Hugging Face Spaces can sometimes be slow if they are waking up or busy.</div>
     </div>
 
     <div id="result" class="card">
@@ -457,12 +428,12 @@
     import { Client, handle_file } from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
 
     const puter = window.puter;
-    const WAN_SPACE = "STCM/wan2-2-fp8da-aoti-preview-2c-pullout";
+    const VIDEO_SPACE = "sunfixer/Wataheeee";
 
     let mode = "create";
     let referenceImages = [];
     let referenceFiles = [];
-    let wanClient = null;
+    let videoClient = null;
 
     const tabs = document.querySelectorAll(".tab");
     const uploadCard = document.getElementById("uploadCard");
@@ -551,10 +522,10 @@
           videoSettings.classList.remove("hidden");
           imageSettings.classList.add("hidden");
           editSettings.classList.add("hidden");
-          promptTitle.textContent = "Describe the video";
-          prompt.placeholder = "Create a realistic cinematic video of this person slowly turning and blinking naturally.";
+          promptTitle.textContent = "Describe the motion";
+          prompt.placeholder = "slow natural body movement, gentle head turn, realistic motion";
           generateBtn.textContent = "Generate Video";
-          uploadHelp.textContent = "For video, upload 1 image as the starting frame. Upload a 2nd image if you want an optional ending frame.";
+          uploadHelp.textContent = "For video, upload 1 starting image.";
         }
       };
     });
@@ -654,7 +625,7 @@
     }
 
     function buildVideoPrompt(userPrompt) {
-      return `Ultra realistic video. ${userPrompt}. Keep motion natural, coherent, and highly believable. Preserve realistic faces, anatomy, textures, and lighting.`;
+      return userPrompt;
     }
 
     function getResultUrl(value) {
@@ -666,12 +637,12 @@
       return null;
     }
 
-    async function connectWanClient() {
-      if (wanClient) return wanClient;
+    async function connectVideoClient() {
+      if (videoClient) return videoClient;
 
-      statusText.textContent = "Connecting to Wan 2.2 video Space...";
+      statusText.textContent = "Connecting to video Space...";
 
-      wanClient = await Client.connect(WAN_SPACE, {
+      videoClient = await Client.connect(VIDEO_SPACE, {
         status_callback: (spaceStatus) => {
           if (!spaceStatus) return;
 
@@ -689,7 +660,7 @@
         }
       });
 
-      return wanClient;
+      return videoClient;
     }
 
     function showImageResult(imageNodeOrUrl) {
@@ -801,56 +772,40 @@
         }
 
         if (mode === "video") {
-          statusText.textContent = "Connecting to Wan 2.2 video model...";
+          statusText.textContent = "Connecting to video model...";
 
-          const client = await connectWanClient();
+          const client = await connectVideoClient();
 
-          statusText.textContent = "Generating video... this can take a while.";
+          statusText.textContent = "Generating video...";
 
           const finalPrompt = buildVideoPrompt(userPrompt);
-
+          const motionStrength = Number(document.getElementById("motionStrength").value);
+          const numFrames = Number(document.getElementById("numFrames").value);
           const steps = Number(document.getElementById("videoSteps").value);
-          const seconds = Number(document.getElementById("videoSeconds").value);
-          const guidance = Number(document.getElementById("videoGuidance").value);
-          const guidance2 = Number(document.getElementById("videoGuidance2").value);
-          const seed = Number(document.getElementById("videoSeed").value || 42);
-          const randomSeed = document.getElementById("videoRandomSeed").checked;
-          const videoQuality = Number(document.getElementById("videoQuality").value);
 
           const startImage = handle_file(referenceFiles[0]);
-          const endImage = referenceFiles[1] ? handle_file(referenceFiles[1]) : null;
 
           const resultData = await client.predict("/generate_video", [
             startImage,
-            endImage,
             finalPrompt,
-            steps,
-            userNegative,
-            seconds,
-            guidance,
-            guidance2,
-            seed,
-            randomSeed,
-            videoQuality
+            motionStrength,
+            numFrames,
+            steps
           ]);
 
-          console.log("Wan result:", resultData);
+          console.log("Video result:", resultData);
 
-          const videoUrl =
-            getResultUrl(resultData?.data?.[0]) ||
-            getResultUrl(resultData?.data?.[1]);
-
-          const usedSeed =
-            resultData?.data?.[2];
+          const videoUrl = getResultUrl(resultData?.data?.[0]);
+          const statusMessage = resultData?.data?.[1];
 
           if (!videoUrl) {
-            throw new Error("Video finished but no playable video URL was found.");
+            throw new Error(statusMessage || "Video finished but no playable video URL was found.");
           }
 
           showVideoResult(videoUrl);
 
-          if (usedSeed !== undefined && usedSeed !== null) {
-            seedInfo.textContent = "Seed used: " + usedSeed;
+          if (statusMessage) {
+            seedInfo.textContent = statusMessage;
           }
         }
 
