@@ -1,2882 +1,1488 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ALF AI</title>
 
-  <title>ALF AI</title>
+<script src="https://js.puter.com/v2/"></script>
 
-  <!-- Puter AI -->
-  <script src="https://js.puter.com/v2/"></script>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:#0b0b0f;
+ color:#fff;
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+.wrap{max-width:900px;margin:auto;padding:20px 16px 70px}
+h1{margin:4px 0;font-size:34px}
+.sub{color:#999;margin-bottom:22px}
+.card{
+ background:#17171d;
+ border:1px solid #2e2e38;
+ border-radius:18px;
+ padding:16px;
+ margin-bottom:15px;
+}
+.tabs{display:flex;gap:8px}
+.tab{
+ flex:1;padding:13px 8px;border:0;border-radius:12px;
+ background:#292932;color:#ddd;font-weight:800;
+}
+.tab.active{background:white;color:black}
+label{display:block;font-weight:750;font-size:14px;margin-bottom:7px}
+textarea,select,input[type=number]{
+ width:100%;background:#0c0c11;color:white;
+ border:1px solid #3b3b47;border-radius:12px;
+ padding:12px;font-size:16px;
+}
+textarea{min-height:110px;resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.hidden{display:none!important}
+.small{font-size:13px;color:#999;line-height:1.45}
+.upload{
+ border:1px dashed #555;border-radius:14px;
+ padding:18px;text-align:center;
+}
+.previewGrid{
+ display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px
+}
+.previewGrid img{
+ width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px
+}
+.btn{
+ width:100%;background:white;color:black;border:0;
+ padding:16px;border-radius:14px;font-size:17px;font-weight:850;
+}
+.btn:disabled{opacity:.5}
+.secondary{
+ width:100%;background:#24242d;color:white;
+ border:1px solid #3b3b47;border-radius:12px;
+ padding:12px;font-weight:700;margin-bottom:15px
+}
+.note{
+ background:#101015;border:1px solid #303039;
+ padding:12px;border-radius:12px;color:#bbb;
+ font-size:13px;line-height:1.5;
+}
+.check{
+ display:flex;gap:8px;align-items:center;
+ background:#101015;border:1px solid #303039;
+ padding:10px;border-radius:10px;
+}
+#error{
+ display:none;background:#441212;border:1px solid #822;
+ color:#ffc2c2;padding:13px;border-radius:12px;margin-bottom:15px;
+ white-space:pre-wrap;
+}
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+/* PROGRESS */
 
-    body {
-      margin: 0;
-      background: #0b0b0f;
-      color: white;
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        Arial,
-        sans-serif;
-    }
+#statusPanel{
+ display:none;background:#17171d;border:1px solid #353541;
+ border-radius:18px;overflow:hidden;margin-top:15px
+}
+.statusTop{
+ display:flex;gap:12px;align-items:center;padding:16px
+}
+.spinner{
+ width:25px;height:25px;border:3px solid #444;
+ border-top-color:white;border-radius:50%;
+ animation:spin .8s linear infinite
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+#statusTitle{font-weight:850;font-size:16px}
+#statusMessage{font-size:13px;color:#aaa;margin-top:3px}
+.progressOuter{height:7px;background:#292932;overflow:hidden}
+#progressBar{
+ height:100%;background:white;width:30%;
+ animation:move 1.3s ease-in-out infinite
+}
+@keyframes move{
+ from{transform:translateX(-120%)}
+ to{transform:translateX(350%)}
+}
+.stats{
+ display:grid;grid-template-columns:repeat(3,1fr);
+ gap:8px;padding:14px
+}
+.stat{
+ text-align:center;background:#101015;border:1px solid #292932;
+ border-radius:11px;padding:9px
+}
+.stat small{display:block;color:#888;font-size:10px;text-transform:uppercase}
+.stat b{font-size:14px}
 
-    .wrap {
-      max-width: 900px;
-      margin: auto;
-      padding: 20px 16px 70px;
-    }
+#result{display:none;margin-top:15px}
+#result img,#result video{
+ width:100%;max-height:75vh;object-fit:contain;
+ background:black;border-radius:14px
+}
+#backendStatus{color:#aaa;font-size:13px;margin-top:10px}
 
-    h1 {
-      margin: 5px 0;
-      font-size: 34px;
-      letter-spacing: -1px;
-    }
-
-    .sub {
-      color: #9a9aa5;
-      margin-bottom: 24px;
-    }
-
-    .card {
-      background: #17171d;
-      border: 1px solid #2c2c35;
-      border-radius: 18px;
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 8px;
-    }
-
-    .tab {
-      flex: 1;
-      border: 0;
-      background: #292932;
-      color: #d2d2d8;
-      padding: 13px 8px;
-      border-radius: 12px;
-      font-weight: 750;
-      cursor: pointer;
-    }
-
-    .tab.active {
-      background: white;
-      color: black;
-    }
-
-    label {
-      display: block;
-      font-size: 14px;
-      font-weight: 750;
-      margin-bottom: 8px;
-    }
-
-    textarea,
-    select,
-    input[type="text"],
-    input[type="number"] {
-      width: 100%;
-      padding: 12px;
-      background: #0d0d12;
-      color: white;
-      border: 1px solid #3a3a45;
-      border-radius: 12px;
-      font-size: 16px;
-    }
-
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-
-    select {
-      min-height: 47px;
-    }
-
-    .grid2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    @media (max-width: 580px) {
-      .grid2 {
-        grid-template-columns: 1fr;
-      }
-
-      .tabs {
-        flex-direction: column;
-      }
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .small {
-      color: #9999a5;
-      font-size: 13px;
-      line-height: 1.45;
-    }
-
-    .sectionTitle {
-      color: #ccccd3;
-      font-size: 12px;
-      letter-spacing: .07em;
-      text-transform: uppercase;
-      font-weight: 800;
-      margin-bottom: 12px;
-    }
-
-    .upload {
-      text-align: center;
-      border: 1px dashed #53535f;
-      border-radius: 14px;
-      padding: 20px 12px;
-    }
-
-    input[type="file"] {
-      margin-top: 12px;
-      max-width: 100%;
-    }
-
-    .previewGrid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 14px;
-    }
-
-    .previewGrid img {
-      width: 100%;
-      aspect-ratio: 1;
-      object-fit: cover;
-      border-radius: 10px;
-    }
-
-    .checks {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 9px;
-    }
-
-    @media (max-width: 580px) {
-      .checks {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .check {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: #101016;
-      border: 1px solid #30303a;
-      padding: 10px;
-      border-radius: 11px;
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    .check input {
-      transform: scale(1.15);
-      width: auto;
-    }
-
-    .btn {
-      display: block;
-      width: 100%;
-      padding: 16px;
-      border: 0;
-      border-radius: 14px;
-      background: white;
-      color: black;
-      font-size: 17px;
-      font-weight: 850;
-      cursor: pointer;
-    }
-
-    .btn:disabled {
-      opacity: .5;
-      cursor: wait;
-    }
-
-    .secondary {
-      width: 100%;
-      background: #24242c;
-      color: white;
-      border: 1px solid #3a3a45;
-      padding: 12px;
-      border-radius: 12px;
-      margin-bottom: 16px;
-      font-weight: 750;
-      cursor: pointer;
-    }
-
-    .noteBox {
-      background: #101015;
-      border: 1px solid #2d2d36;
-      padding: 13px;
-      border-radius: 12px;
-      color: #bcbcc5;
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    #error {
-      display: none;
-      background: #451111;
-      border: 1px solid #862b2b;
-      color: #ffc0c0;
-      padding: 14px;
-      border-radius: 12px;
-      margin-bottom: 16px;
-      white-space: pre-wrap;
-    }
-
-    /* ------------------------------ */
-    /* PROGRESS PANEL */
-    /* ------------------------------ */
-
-    #statusPanel {
-      display: none;
-      margin-top: 16px;
-      background: #17171d;
-      border: 1px solid #343440;
-      border-radius: 18px;
-      overflow: hidden;
-    }
-
-    .statusHeader {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px;
-      border-bottom: 1px solid #292932;
-    }
-
-    .spinner {
-      width: 25px;
-      height: 25px;
-      border: 3px solid #3c3c47;
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin .8s linear infinite;
-      flex-shrink: 0;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    #statusTitle {
-      font-weight: 800;
-      font-size: 16px;
-    }
-
-    #statusMessage {
-      color: #a8a8b2;
-      font-size: 13px;
-      margin-top: 3px;
-    }
-
-    .progressOuter {
-      height: 7px;
-      background: #292932;
-      overflow: hidden;
-    }
-
-    .progressInner {
-      width: 0%;
-      height: 100%;
-      background: white;
-      transition: width .4s ease;
-    }
-
-    .progressInner.indeterminate {
-      width: 35%;
-      animation: movingProgress 1.3s ease-in-out infinite;
-    }
-
-    @keyframes movingProgress {
-      0% {
-        transform: translateX(-120%);
-      }
-
-      100% {
-        transform: translateX(350%);
-      }
-    }
-
-    .statusStats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      padding: 14px;
-      gap: 8px;
-    }
-
-    .stat {
-      background: #101015;
-      border: 1px solid #292932;
-      border-radius: 11px;
-      padding: 10px;
-      text-align: center;
-    }
-
-    .statLabel {
-      font-size: 11px;
-      color: #888893;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-    }
-
-    .statValue {
-      font-weight: 800;
-      font-size: 14px;
-    }
-
-    /* ------------------------------ */
-    /* RESULT */
-    /* ------------------------------ */
-
-    #result {
-      display: none;
-      margin-top: 16px;
-    }
-
-    #result img,
-    #result video {
-      width: 100%;
-      max-height: 75vh;
-      object-fit: contain;
-      display: block;
-      border-radius: 14px;
-      background: black;
-    }
-
-    #backendStatus {
-      margin-top: 10px;
-      color: #aaaab4;
-      font-size: 13px;
-      line-height: 1.4;
-    }
-  </style>
+@media(max-width:600px){
+ .tabs{flex-direction:column}
+ .grid2,.grid3{grid-template-columns:1fr}
+}
+</style>
 </head>
-
 
 <body>
 
-  <div class="wrap">
+<div class="wrap">
 
-    <h1>ALF AI</h1>
+<h1>ALF AI</h1>
+<div class="sub">Ultra realistic image & video generator</div>
 
-    <div class="sub">
-      Ultra realistic image & video generator
-    </div>
+<button id="loginBtn" class="secondary">Sign in to Puter</button>
 
+<div class="card">
+ <div class="tabs">
+  <button class="tab active" data-mode="create">Create Image</button>
+  <button class="tab" data-mode="edit">Edit Image</button>
+  <button class="tab" data-mode="video">Create Video</button>
+ </div>
+</div>
 
-    <!-- PUTER LOGIN -->
 
-    <button id="loginBtn" class="secondary">
-      Sign in to Puter
-    </button>
+<!-- UPLOAD -->
 
+<div id="uploadCard" class="card hidden">
 
-    <!-- TABS -->
+ <label id="uploadTitle">Reference image</label>
 
-    <div class="card">
+ <div class="upload">
+  <div id="uploadHelp" class="small">Upload an image.</div>
+  <input id="fileInput" type="file" accept="image/*" multiple>
+  <div id="previews" class="previewGrid"></div>
+ </div>
 
-      <div class="tabs">
+</div>
 
-        <button class="tab active" data-mode="create">
-          Create Image
-        </button>
 
-        <button class="tab" data-mode="edit">
-          Edit Image
-        </button>
+<!-- PROMPT -->
 
-        <button class="tab" data-mode="video">
-          Create Video
-        </button>
+<div class="card">
 
-      </div>
+ <label id="promptTitle">Describe the image</label>
 
-    </div>
+ <textarea
+ id="prompt"
+ placeholder="Describe exactly what you want..."></textarea>
 
+</div>
 
-    <!-- UPLOAD -->
 
-    <div id="uploadCard" class="card hidden">
+<!-- NEGATIVE -->
 
-      <label>
-        Reference image
-      </label>
+<div id="negativeCard" class="card">
 
-      <div class="upload">
+ <label>Negative prompt</label>
 
-        <div class="small" id="uploadHelp">
-          Upload the image you want to use.
-        </div>
+ <textarea
+ id="negativePrompt"
+ placeholder="blurry, distorted anatomy, low quality, artifacts..."></textarea>
 
-        <input
-          id="fileInput"
-          type="file"
-          accept="image/*"
-          multiple
-        >
+</div>
 
-        <div
-          id="previews"
-          class="previewGrid">
-        </div>
 
-      </div>
+<!-- IMAGE OPTIONS -->
 
-    </div>
+<div id="imageSettings" class="card">
 
+ <div class="grid2">
 
-    <!-- PROMPT -->
+  <div>
+   <label>Realism</label>
+   <select id="realism">
+    <option value="natural">Natural Photo</option>
+    <option value="iphone">iPhone Photo</option>
+    <option value="dslr">DSLR</option>
+    <option value="cinematic">Cinematic</option>
+   </select>
+  </div>
 
-    <div class="card">
+  <div>
+   <label>Model</label>
+   <select id="imageModel">
+    <option value="gpt-image-1-mini">GPT Image Mini</option>
+    <option value="gemini-2.5-flash-image-preview">Gemini Image</option>
+    <option value="grok-imagine-image">Grok Imagine</option>
+   </select>
+  </div>
 
-      <label id="promptTitle">
-        Describe the image
-      </label>
+  <div>
+   <label>Quality</label>
+   <select id="imageQuality">
+    <option value="low">Standard</option>
+    <option value="medium">High</option>
+    <option value="high">Extreme</option>
+   </select>
+  </div>
 
-      <textarea
-        id="prompt"
-        placeholder="Describe what you want to create..."
-      ></textarea>
+  <div>
+   <label>Size</label>
+   <select id="imageSize">
+    <option value="1024x1024">Square</option>
+    <option value="832x1216">Portrait</option>
+    <option value="1216x832">Landscape</option>
+   </select>
+  </div>
 
-    </div>
+ </div>
 
+</div>
 
-    <!-- NEGATIVE PROMPT -->
 
-    <div id="negativeCard" class="card">
+<!-- EDIT OPTIONS -->
 
-      <label>
-        Negative prompt (optional)
-      </label>
+<div id="editSettings" class="card hidden">
 
-      <textarea
-        id="negativePrompt"
-        placeholder="blurry, bad anatomy, distorted face, unrealistic details..."
-      ></textarea>
+ <div class="grid2">
 
-      <div class="small" style="margin-top:8px;">
-        Used for image generation/editing where supported.
-      </div>
+  <div>
+   <label>Edit precision</label>
+   <select id="editPrecision">
+    <option value="balanced">Balanced</option>
+    <option value="strict">Change only requested thing</option>
+    <option value="creative">Creative</option>
+   </select>
+  </div>
 
-    </div>
+  <div>
+   <label>Edit strength</label>
+   <select id="editStrength">
+    <option value="subtle">Subtle</option>
+    <option value="moderate" selected>Moderate</option>
+    <option value="strong">Strong</option>
+   </select>
+  </div>
 
+ </div>
 
-    <!-- IMAGE SETTINGS -->
+ <br>
 
-    <div id="imageSettings" class="card">
+ <div class="grid2">
 
-      <div class="sectionTitle">
-        Image controls
-      </div>
+  <label class="check">
+   <input id="preserveIdentity" type="checkbox" checked>
+   Preserve identity
+  </label>
 
-      <div class="grid2">
+  <label class="check">
+   <input id="preserveBackground" type="checkbox" checked>
+   Preserve background
+  </label>
 
-        <div>
+  <label class="check">
+   <input id="preservePose" type="checkbox" checked>
+   Preserve pose
+  </label>
 
-          <label>
-            Realism style
-          </label>
+  <label class="check">
+   <input id="preserveLighting" type="checkbox" checked>
+   Preserve lighting
+  </label>
 
-          <select id="realismPreset">
+ </div>
 
-            <option value="natural">
-              Natural Photo
-            </option>
+</div>
 
-            <option value="iphone">
-              iPhone Photo
-            </option>
 
-            <option value="dslr">
-              DSLR Portrait
-            </option>
+<!-- VIDEO OPTIONS -->
 
-            <option value="cinematic">
-              Cinematic Film
-            </option>
+<div id="videoSettings" class="card hidden">
 
-          </select>
+ <div class="note">
+  <b>Video engine:</b> SarahCole2008 / Wan 2.2 14B
+  <br><br>
+  Image 1 = starting frame.
+  <br>
+  Optional image 2 = ending frame.
+ </div>
 
-        </div>
+ <br>
 
+ <div class="grid2">
 
-        <div>
+  <div>
+   <label>Video duration</label>
 
-          <label>
-            Image model
-          </label>
-
-          <select id="imageModel">
-
-            <option value="gpt-image-1-mini">
-              GPT Image Mini
-            </option>
-
-            <option value="gemini-2.5-flash-image-preview">
-              Gemini Image
-            </option>
-
-            <option value="grok-imagine-image">
-              Grok Imagine
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <div>
-
-          <label>
-            Quality
-          </label>
-
-          <select id="imageQuality">
-
-            <option value="low">
-              Standard
-            </option>
-
-            <option value="medium">
-              High
-            </option>
-
-            <option value="high">
-              Extreme
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <div>
-
-          <label>
-            Aspect ratio
-          </label>
-
-          <select id="aspectRatio">
-
-            <option value="1024x1024">
-              Square
-            </option>
-
-            <option value="832x1216">
-              Portrait
-            </option>
-
-            <option value="1216x832">
-              Landscape
-            </option>
-
-            <option value="1080x1920">
-              Story / Vertical
-            </option>
-
-          </select>
-
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- EDIT SETTINGS -->
-
-    <div id="editSettings" class="card hidden">
-
-      <div class="sectionTitle">
-        Edit controls
-      </div>
-
-      <div class="grid2">
-
-        <div>
-
-          <label>
-            Edit precision
-          </label>
-
-          <select id="editPrecision">
-
-            <option value="loose">
-              Loose / Creative
-            </option>
-
-            <option value="balanced" selected>
-              Balanced
-            </option>
-
-            <option value="strict">
-              Change only requested thing
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <div>
-
-          <label>
-            Edit intensity
-          </label>
-
-          <select id="editIntensity">
-
-            <option value="subtle">
-              Subtle
-            </option>
-
-            <option value="moderate" selected>
-              Moderate
-            </option>
-
-            <option value="strong">
-              Strong
-            </option>
-
-          </select>
-
-        </div>
-
-      </div>
-
-
-      <div style="margin-top:15px;">
-
-        <label>
-          Preserve
-        </label>
-
-        <div class="checks">
-
-          <label class="check">
-            <input
-              type="checkbox"
-              id="preserveIdentity"
-              checked
-            >
-            Identity
-          </label>
-
-          <label class="check">
-            <input
-              type="checkbox"
-              id="preserveLighting"
-              checked
-            >
-            Lighting
-          </label>
-
-          <label class="check">
-            <input
-              type="checkbox"
-              id="preserveBackground"
-              checked
-            >
-            Background
-          </label>
-
-          <label class="check">
-            <input
-              type="checkbox"
-              id="preservePose"
-              checked
-            >
-            Pose / framing
-          </label>
-
-          <label class="check">
-            <input
-              type="checkbox"
-              id="preserveClothes"
-            >
-            Clothes
-          </label>
-
-          <label class="check">
-            <input
-              type="checkbox"
-              id="preserveExpression"
-              checked
-            >
-            Expression
-          </label>
-
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- VIDEO SETTINGS -->
-
-    <div
-      id="videoSettings"
-      class="card hidden"
-    >
-
-      <div class="sectionTitle">
-        Video controls
-      </div>
-
-      <div
-        class="noteBox"
-        style="margin-bottom:14px;"
-      >
-
-        Video engine:
-        <strong>Wataheeee</strong>
-
-        <br><br>
-
-        Upload one starting image and describe how
-        you want it to move.
-
-      </div>
-
-
-      <div class="grid2">
-
-        <div>
-
-          <label>
-            Motion strength
-          </label>
-
-          <select id="motionStrength">
-
-            <option value="80">
-              80 — Low
-            </option>
-
-            <option value="100">
-              100
-            </option>
-
-            <option value="120">
-              120
-            </option>
-
-            <option value="140" selected>
-              140 — Default
-            </option>
-
-            <option value="160">
-              160
-            </option>
-
-            <option value="180">
-              180
-            </option>
-
-            <option value="200">
-              200 — Maximum
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <div>
-
-          <label>
-            Frames
-          </label>
-
-          <select id="numFrames">
-
-            <option value="6">
-              6 — Fastest
-            </option>
-
-            <option value="7">
-              7
-            </option>
-
-            <option value="8" selected>
-              8 — Default
-            </option>
-
-            <option value="9">
-              9
-            </option>
-
-            <option value="10">
-              10
-            </option>
-
-            <option value="11">
-              11
-            </option>
-
-            <option value="12">
-              12 — Longest
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <div>
-
-          <label>
-            Quality / Steps
-          </label>
-
-          <select id="videoSteps">
-
-            <option value="10">
-              10 — Fast
-            </option>
-
-            <option value="12">
-              12
-            </option>
-
-            <option value="15" selected>
-              15 — Balanced
-            </option>
-
-            <option value="18">
-              18
-            </option>
-
-            <option value="20">
-              20 — Maximum
-            </option>
-
-          </select>
-
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- ERROR -->
-
-    <div id="error"></div>
-
-
-    <!-- GENERATE -->
-
-    <button
-      id="generateBtn"
-      class="btn"
-    >
-      Generate Image
-    </button>
-
-
-    <!-- LIVE STATUS -->
-
-    <div id="statusPanel">
-
-      <div class="statusHeader">
-
-        <div
-          id="spinner"
-          class="spinner">
-        </div>
-
-        <div>
-
-          <div id="statusTitle">
-            Preparing...
-          </div>
-
-          <div id="statusMessage">
-            Connecting to AI...
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <div class="progressOuter">
-
-        <div
-          id="progressBar"
-          class="progressInner indeterminate">
-        </div>
-
-      </div>
-
-
-      <div class="statusStats">
-
-        <div class="stat">
-
-          <div class="statLabel">
-            Queue
-          </div>
-
-          <div
-            id="queueValue"
-            class="statValue">
-            —
-          </div>
-
-        </div>
-
-
-        <div class="stat">
-
-          <div class="statLabel">
-            ETA
-          </div>
-
-          <div
-            id="etaValue"
-            class="statValue">
-            —
-          </div>
-
-        </div>
-
-
-        <div class="stat">
-
-          <div class="statLabel">
-            Elapsed
-          </div>
-
-          <div
-            id="elapsedValue"
-            class="statValue">
-            0s
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- RESULT -->
-
-    <div
-      id="result"
-      class="card"
-    >
-
-      <label>
-        Result
-      </label>
-
-      <div id="resultMedia"></div>
-
-      <div id="backendStatus"></div>
-
-    </div>
-
+   <select id="duration">
+    <option value="2">2 seconds</option>
+    <option value="3.5" selected>3.5 seconds</option>
+    <option value="5">5 seconds</option>
+    <option value="7">7 seconds</option>
+    <option value="10">10 seconds</option>
+   </select>
   </div>
 
 
-  <!-- JAVASCRIPT -->
+  <div>
+   <label>Inference steps</label>
 
-  <script type="module">
-
-    import {
-      Client,
-      handle_file
-    } from
-    "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
-
-
-    /* ===================================== */
-    /* CONFIG */
-    /* ===================================== */
-
-    const VIDEO_SPACE =
-      "sunfixer/Wataheeee";
+   <select id="steps">
+    <option value="4">4 — Fastest</option>
+    <option value="6" selected>6 — Balanced</option>
+    <option value="8">8 — Higher quality</option>
+   </select>
+  </div>
 
 
-    /* ===================================== */
-    /* STATE */
-    /* ===================================== */
+  <div>
+   <label>Video quality</label>
 
-    let mode = "create";
-
-    let referenceFiles = [];
-
-    let referenceImages = [];
-
-    let videoClient = null;
-
-    let timerInterval = null;
-
-    let jobStartTime = null;
+   <select id="quality">
+    <option value="4">4 — Fast</option>
+    <option value="6" selected>6 — Balanced</option>
+    <option value="8">8 — High</option>
+    <option value="10">10 — Maximum</option>
+   </select>
+  </div>
 
 
-    /* ===================================== */
-    /* ELEMENTS */
-    /* ===================================== */
+  <div>
+   <label>Output fluidity</label>
 
-    const tabs =
-      document.querySelectorAll(".tab");
-
-    const loginBtn =
-      document.getElementById("loginBtn");
-
-    const uploadCard =
-      document.getElementById("uploadCard");
-
-    const uploadHelp =
-      document.getElementById("uploadHelp");
-
-    const fileInput =
-      document.getElementById("fileInput");
-
-    const previews =
-      document.getElementById("previews");
-
-    const prompt =
-      document.getElementById("prompt");
-
-    const promptTitle =
-      document.getElementById("promptTitle");
-
-    const negativePrompt =
-      document.getElementById("negativePrompt");
-
-    const negativeCard =
-      document.getElementById("negativeCard");
-
-    const imageSettings =
-      document.getElementById("imageSettings");
-
-    const editSettings =
-      document.getElementById("editSettings");
-
-    const videoSettings =
-      document.getElementById("videoSettings");
-
-    const generateBtn =
-      document.getElementById("generateBtn");
-
-    const errorBox =
-      document.getElementById("error");
-
-    const result =
-      document.getElementById("result");
-
-    const resultMedia =
-      document.getElementById("resultMedia");
-
-    const backendStatus =
-      document.getElementById("backendStatus");
+   <select id="fps">
+    <option value="16" selected>16 FPS — Fastest</option>
+    <option value="32">32 FPS — Smooth</option>
+    <option value="64">64 FPS — Very smooth</option>
+   </select>
+  </div>
 
 
-    /* PROGRESS */
+  <div>
+   <label>Prompt guidance</label>
 
-    const statusPanel =
-      document.getElementById("statusPanel");
-
-    const statusTitle =
-      document.getElementById("statusTitle");
-
-    const statusMessage =
-      document.getElementById("statusMessage");
-
-    const progressBar =
-      document.getElementById("progressBar");
-
-    const queueValue =
-      document.getElementById("queueValue");
-
-    const etaValue =
-      document.getElementById("etaValue");
-
-    const elapsedValue =
-      document.getElementById("elapsedValue");
-
-    const spinner =
-      document.getElementById("spinner");
+   <select id="guidance">
+    <option value="1" selected>1 — Recommended</option>
+    <option value="1.5">1.5</option>
+    <option value="2">2 — Stronger</option>
+   </select>
+  </div>
 
 
-    /* ===================================== */
-    /* PUTER LOGIN */
-    /* ===================================== */
+  <div>
+   <label>Low-noise guidance</label>
 
-    async function updateLoginButton() {
+   <select id="guidance2">
+    <option value="1" selected>1 — Recommended</option>
+    <option value="1.5">1.5</option>
+    <option value="2">2 — Stronger</option>
+   </select>
+  </div>
 
-      try {
+ </div>
 
-        if (
-          window.puter &&
-          await puter.auth.isSignedIn()
-        ) {
+ <br>
 
-          const user =
-            await puter.auth.getUser();
+ <label class="check">
 
-          loginBtn.textContent =
-            "Signed in as " +
-            (user.username || "Puter user");
+  <input id="busyProtection" type="checkbox">
 
-        } else {
+  Busy-server protection (+30% GPU reservation)
 
-          loginBtn.textContent =
-            "Sign in to Puter";
+ </label>
 
-        }
+ <div class="small" style="margin-top:8px">
+  This is the Space's “Safe Mode”. It is a server reliability
+  setting, not a prompt/content filter.
+ </div>
 
-      } catch (e) {
+</div>
 
-        loginBtn.textContent =
-          "Sign in to Puter";
 
-      }
+<div id="error"></div>
+
+<button id="generateBtn" class="btn">
+Generate Image
+</button>
+
+
+<!-- STATUS -->
+
+<div id="statusPanel">
+
+ <div class="statusTop">
+
+  <div id="spinner" class="spinner"></div>
+
+  <div>
+   <div id="statusTitle">Preparing</div>
+   <div id="statusMessage">Starting...</div>
+  </div>
+
+ </div>
+
+ <div class="progressOuter">
+  <div id="progressBar"></div>
+ </div>
+
+ <div class="stats">
+
+  <div class="stat">
+   <small>Queue</small>
+   <b id="queue">—</b>
+  </div>
+
+  <div class="stat">
+   <small>ETA</small>
+   <b id="eta">—</b>
+  </div>
+
+  <div class="stat">
+   <small>Elapsed</small>
+   <b id="elapsed">0s</b>
+  </div>
+
+ </div>
+
+</div>
+
+
+<!-- RESULT -->
+
+<div id="result" class="card">
+
+ <label>Result</label>
+
+ <div id="resultMedia"></div>
+
+ <div id="backendStatus"></div>
+
+</div>
+
+</div>
+
+
+<script type="module">
+
+import {
+ Client,
+ handle_file
+}
+from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
+
+
+/* NEW VIDEO SPACE */
+
+const VIDEO_SPACE =
+"SarahCole2008/wan2-2-fp8da-aoti-preview-2c-pullout";
+
+
+let mode = "create";
+
+let files = [];
+let imageData = [];
+
+let videoClient = null;
+
+let startTime = 0;
+let timer = null;
+
+
+/* ELEMENTS */
+
+const $ = id => document.getElementById(id);
+
+const uploadCard = $("uploadCard");
+const uploadHelp = $("uploadHelp");
+const uploadTitle = $("uploadTitle");
+
+const fileInput = $("fileInput");
+const previews = $("previews");
+
+const prompt = $("prompt");
+const promptTitle = $("promptTitle");
+
+const negativeCard = $("negativeCard");
+const negativePrompt = $("negativePrompt");
+
+const imageSettings = $("imageSettings");
+const editSettings = $("editSettings");
+const videoSettings = $("videoSettings");
+
+const generateBtn = $("generateBtn");
+
+const statusPanel = $("statusPanel");
+const statusTitle = $("statusTitle");
+const statusMessage = $("statusMessage");
+
+const queueDisplay = $("queue");
+const etaDisplay = $("eta");
+const elapsedDisplay = $("elapsed");
+
+const spinner = $("spinner");
+
+const errorBox = $("error");
+
+const result = $("result");
+const resultMedia = $("resultMedia");
+const backendStatus = $("backendStatus");
+
+
+/* LOGIN */
+
+async function updateLogin(){
+
+ try{
+
+  if(
+   window.puter &&
+   await puter.auth.isSignedIn()
+  ){
+
+   const user =
+   await puter.auth.getUser();
+
+   $("loginBtn").textContent =
+   "Signed in as " +
+   (user.username || "Puter user");
+
+  }else{
+
+   $("loginBtn").textContent =
+   "Sign in to Puter";
+
+  }
+
+ }catch{}
+
+}
+
+$("loginBtn").onclick = async()=>{
+
+ try{
+
+  await puter.auth.signIn();
+
+  updateLogin();
+
+ }catch(e){
+
+  showError(
+   e?.message ||
+   "Puter sign-in failed."
+  );
+
+ }
+
+};
+
+updateLogin();
+
+
+/* TABS */
+
+document.querySelectorAll(".tab").forEach(tab=>{
+
+ tab.onclick=()=>{
+
+  document.querySelectorAll(".tab")
+  .forEach(t=>t.classList.remove("active"));
+
+  tab.classList.add("active");
+
+  mode = tab.dataset.mode;
+
+  hideResult();
+  clearError();
+
+
+  if(mode==="create"){
+
+   uploadCard.classList.add("hidden");
+
+   imageSettings.classList.remove("hidden");
+   editSettings.classList.add("hidden");
+   videoSettings.classList.add("hidden");
+
+   negativeCard.classList.remove("hidden");
+
+   promptTitle.textContent =
+   "Describe the image";
+
+   generateBtn.textContent =
+   "Generate Image";
+
+  }
+
+
+  if(mode==="edit"){
+
+   uploadCard.classList.remove("hidden");
+
+   uploadTitle.textContent =
+   "Image to edit";
+
+   uploadHelp.textContent =
+   "Upload the image you want changed.";
+
+   imageSettings.classList.remove("hidden");
+   editSettings.classList.remove("hidden");
+   videoSettings.classList.add("hidden");
+
+   negativeCard.classList.remove("hidden");
+
+   promptTitle.textContent =
+   "What should I change?";
+
+   generateBtn.textContent =
+   "Edit Image";
+
+  }
+
+
+  if(mode==="video"){
+
+   uploadCard.classList.remove("hidden");
+
+   uploadTitle.textContent =
+   "Video images";
+
+   uploadHelp.textContent =
+   "Upload one starting image. You can optionally upload a second image to use as the final frame.";
+
+   imageSettings.classList.add("hidden");
+   editSettings.classList.add("hidden");
+   videoSettings.classList.remove("hidden");
+
+   negativeCard.classList.remove("hidden");
+
+   promptTitle.textContent =
+   "Describe the motion";
+
+   generateBtn.textContent =
+   "Generate Video";
+
+  }
+
+ };
+
+});
+
+
+/* FILE UPLOAD */
+
+function dataURL(file){
+
+ return new Promise((resolve,reject)=>{
+
+  const reader =
+  new FileReader();
+
+  reader.onload =
+  ()=>resolve(reader.result);
+
+  reader.onerror =
+  reject;
+
+  reader.readAsDataURL(file);
+
+ });
+
+}
+
+
+fileInput.onchange = async()=>{
+
+ files = [];
+ imageData = [];
+
+ previews.innerHTML = "";
+
+
+ const limit =
+ mode==="video" ? 2 : 3;
+
+
+ const selected =
+ [...fileInput.files].slice(0,limit);
+
+
+ for(const file of selected){
+
+  files.push(file);
+
+  const data =
+  await dataURL(file);
+
+  imageData.push(data);
+
+
+  const img =
+  document.createElement("img");
+
+  img.src = data;
+
+  previews.appendChild(img);
+
+ }
+
+};
+
+
+/* UI HELPERS */
+
+function showError(text){
+
+ errorBox.textContent = text;
+ errorBox.style.display = "block";
+
+}
+
+function clearError(){
+
+ errorBox.style.display = "none";
+ errorBox.textContent = "";
+
+}
+
+function hideResult(){
+
+ result.style.display = "none";
+ statusPanel.style.display = "none";
+
+}
+
+function readableSeconds(value){
+
+ const s =
+ Math.max(
+ 0,
+ Math.round(Number(value))
+ );
+
+ if(Number.isNaN(s))
+ return "—";
+
+ if(s<60)
+ return s+"s";
+
+ return (
+  Math.floor(s/60) +
+  "m " +
+  (s%60) +
+  "s"
+ );
+
+}
+
+
+/* TIMER */
+
+function startTimer(){
+
+ startTime = Date.now();
+
+ clearInterval(timer);
+
+ elapsedDisplay.textContent = "0s";
+
+ timer=setInterval(()=>{
+
+  elapsedDisplay.textContent =
+  readableSeconds(
+   (Date.now()-startTime)/1000
+  );
+
+ },1000);
+
+}
+
+function stopTimer(){
+
+ clearInterval(timer);
+
+}
+
+
+/* STATUS */
+
+function startStatus(){
+
+ statusPanel.style.display =
+ "block";
+
+ spinner.style.display =
+ "block";
+
+ statusTitle.textContent =
+ "Preparing";
+
+ statusMessage.textContent =
+ "Starting your request...";
+
+ queueDisplay.textContent =
+ "—";
+
+ etaDisplay.textContent =
+ "—";
+
+ startTimer();
+
+}
+
+function completeStatus(){
+
+ spinner.style.display =
+ "none";
+
+ statusTitle.textContent =
+ "Complete";
+
+ statusMessage.textContent =
+ "Generation finished.";
+
+ queueDisplay.textContent =
+ "Done";
+
+ etaDisplay.textContent =
+ "0s";
+
+ stopTimer();
+
+}
+
+
+/* IMAGE PROMPTS */
+
+function realismPrompt(){
+
+ switch($("realism").value){
+
+  case "iphone":
+  return "ultra realistic iPhone photograph, natural lighting, realistic skin texture, believable real-world detail";
+
+  case "dslr":
+  return "ultra realistic DSLR photograph, natural skin detail, accurate anatomy, professional photography";
+
+  case "cinematic":
+  return "photorealistic cinematic photograph, realistic film lighting, highly believable textures and anatomy";
+
+  default:
+  return "ultra realistic natural photograph, true-to-life skin, believable lighting and accurate anatomy";
+
+ }
+
+}
+
+
+function buildEditPrompt(text){
+
+ let preserve=[];
+
+ if($("preserveIdentity").checked)
+ preserve.push("same identity");
+
+ if($("preserveBackground").checked)
+ preserve.push("same background");
+
+ if($("preservePose").checked)
+ preserve.push("same pose and framing");
+
+ if($("preserveLighting").checked)
+ preserve.push("same lighting");
+
+
+ return `
+ ${realismPrompt()}.
+
+ Edit the supplied image.
+
+ Requested change:
+ ${text}
+
+ Edit precision:
+ ${$("editPrecision").value}.
+
+ Edit strength:
+ ${$("editStrength").value}.
+
+ Preserve:
+ ${preserve.join(", ")}.
+
+ Keep the result photographically realistic.
+ `;
+
+}
+
+
+/* RESULT */
+
+function getURL(value){
+
+ if(!value)
+ return null;
+
+ if(typeof value==="string")
+ return value;
+
+ if(value.url)
+ return value.url;
+
+ if(value.path &&
+ String(value.path).startsWith("http"))
+ return value.path;
+
+ if(value.name &&
+ String(value.name).startsWith("http"))
+ return value.name;
+
+ return null;
+
+}
+
+
+function showImage(value){
+
+ resultMedia.innerHTML="";
+
+ if(value instanceof HTMLElement){
+
+  resultMedia.appendChild(value);
+
+ }else{
+
+  const img =
+  document.createElement("img");
+
+  img.src=value;
+
+  resultMedia.appendChild(img);
+
+ }
+
+ result.style.display="block";
+
+ result.scrollIntoView({
+  behavior:"smooth"
+ });
+
+}
+
+
+function showVideo(url){
+
+ resultMedia.innerHTML="";
+
+ const video =
+ document.createElement("video");
+
+ video.src=url;
+ video.controls=true;
+ video.playsInline=true;
+ video.autoplay=false;
+
+ resultMedia.appendChild(video);
+
+ result.style.display="block";
+
+ result.scrollIntoView({
+  behavior:"smooth"
+ });
+
+}
+
+
+/* VIDEO CONNECTION */
+
+async function connectVideo(){
+
+ if(videoClient)
+ return videoClient;
+
+
+ statusTitle.textContent =
+ "Connecting";
+
+ statusMessage.textContent =
+ "Connecting to SarahCole2008 Wan 2.2...";
+
+
+ videoClient =
+ await Client.connect(
+  VIDEO_SPACE,
+  {
+   events:["data","status"],
+
+   status_callback:s=>{
+
+    if(!s) return;
+
+    if(s.status==="sleeping"){
+
+     statusTitle.textContent =
+     "Waking AI";
+
+     statusMessage.textContent =
+     "The Space is waking up...";
 
     }
 
+    if(s.status==="running"){
 
-    loginBtn.onclick =
-      async () => {
+     statusTitle.textContent =
+     "Connected";
 
-        clearError();
-
-        try {
-
-          if (!window.puter) {
-
-            throw new Error(
-              "Puter did not load."
-            );
-
-          }
-
-          await puter.auth.signIn();
-
-          await updateLoginButton();
-
-        } catch (e) {
-
-          showError(
-            e?.message ||
-            "Puter sign-in failed."
-          );
-
-        }
-
-      };
-
-
-    updateLoginButton();
-
-
-    /* ===================================== */
-    /* MODE TABS */
-    /* ===================================== */
-
-    tabs.forEach(tab => {
-
-      tab.onclick = () => {
-
-        tabs.forEach(t =>
-          t.classList.remove("active")
-        );
-
-        tab.classList.add("active");
-
-        mode =
-          tab.dataset.mode;
-
-        result.style.display =
-          "none";
-
-        statusPanel.style.display =
-          "none";
-
-        clearError();
-
-
-        /* CREATE IMAGE */
-
-        if (mode === "create") {
-
-          uploadCard.classList.add(
-            "hidden"
-          );
-
-          editSettings.classList.add(
-            "hidden"
-          );
-
-          videoSettings.classList.add(
-            "hidden"
-          );
-
-          imageSettings.classList.remove(
-            "hidden"
-          );
-
-          negativeCard.classList.remove(
-            "hidden"
-          );
-
-          promptTitle.textContent =
-            "Describe the image";
-
-          prompt.placeholder =
-            "Describe the realistic image you want to create...";
-
-          generateBtn.textContent =
-            "Generate Image";
-
-        }
-
-
-        /* EDIT IMAGE */
-
-        if (mode === "edit") {
-
-          uploadCard.classList.remove(
-            "hidden"
-          );
-
-          editSettings.classList.remove(
-            "hidden"
-          );
-
-          videoSettings.classList.add(
-            "hidden"
-          );
-
-          imageSettings.classList.remove(
-            "hidden"
-          );
-
-          negativeCard.classList.remove(
-            "hidden"
-          );
-
-          uploadHelp.textContent =
-            "Upload the image you want to edit.";
-
-          promptTitle.textContent =
-            "What should I change?";
-
-          prompt.placeholder =
-            "Describe exactly what you want changed while preserving everything else...";
-
-          generateBtn.textContent =
-            "Edit Image";
-
-        }
-
-
-        /* VIDEO */
-
-        if (mode === "video") {
-
-          uploadCard.classList.remove(
-            "hidden"
-          );
-
-          editSettings.classList.add(
-            "hidden"
-          );
-
-          imageSettings.classList.add(
-            "hidden"
-          );
-
-          videoSettings.classList.remove(
-            "hidden"
-          );
-
-          negativeCard.classList.add(
-            "hidden"
-          );
-
-          uploadHelp.textContent =
-            "Upload one starting image for the video.";
-
-          promptTitle.textContent =
-            "Describe the motion";
-
-          prompt.placeholder =
-            "Example: slow natural movement, gentle head turn, subtle blinking, realistic camera motion...";
-
-          generateBtn.textContent =
-            "Generate Video";
-
-        }
-
-      };
-
-    });
-
-
-    /* ===================================== */
-    /* IMAGE UPLOAD */
-    /* ===================================== */
-
-    function fileToDataURL(file) {
-
-      return new Promise(
-        (resolve, reject) => {
-
-          const reader =
-            new FileReader();
-
-          reader.onload =
-            () => resolve(
-              reader.result
-            );
-
-          reader.onerror =
-            reject;
-
-          reader.readAsDataURL(
-            file
-          );
-
-        }
-      );
+     statusMessage.textContent =
+     "Video engine ready.";
 
     }
 
+   }
 
-    fileInput.onchange =
-      async () => {
+  }
+ );
 
-        previews.innerHTML = "";
 
-        referenceFiles = [];
+ return videoClient;
 
-        referenceImages = [];
+}
 
 
-        const maximumFiles =
-          mode === "video"
-            ? 1
-            : 3;
+/* LIVE VIDEO JOB */
 
+async function runVideo(client,payload){
 
-        const files =
-          [...fileInput.files]
-            .slice(
-              0,
-              maximumFiles
-            );
+ const job =
+ client.submit(
+  "/generate_video",
+  payload
+ );
 
 
-        for (
-          const file
-          of files
-        ) {
+ let finalData=null;
 
-          referenceFiles.push(
-            file
-          );
 
-          const dataURL =
-            await fileToDataURL(
-              file
-            );
+ for await(const event of job){
 
-          referenceImages.push(
-            dataURL
-          );
+  console.log(
+   "VIDEO EVENT",
+   event
+  );
 
 
-          const image =
-            document.createElement(
-              "img"
-            );
+  if(event.type==="status"){
 
-          image.src =
-            dataURL;
+   if(event.stage==="pending"){
 
-          previews.appendChild(
-            image
-          );
+    statusTitle.textContent =
+    "Queued";
 
-        }
+    statusMessage.textContent =
+    "Waiting for an xlarge video GPU slot...";
 
-      };
+    if(
+     typeof event.position
+     ==="number"
+    )
+    queueDisplay.textContent =
+    event.position;
 
+    else
+    queueDisplay.textContent =
+    "Waiting";
 
-    /* ===================================== */
-    /* ERROR */
-    /* ===================================== */
 
-    function showError(message) {
+    if(
+     typeof event.eta
+     ==="number"
+    )
+    etaDisplay.textContent =
+    readableSeconds(event.eta);
 
-      errorBox.textContent =
-        message;
+   }
 
-      errorBox.style.display =
-        "block";
 
-    }
+   else if(
+    event.stage==="generating"
+   ){
 
+    statusTitle.textContent =
+    "Generating";
 
-    function clearError() {
+    statusMessage.textContent =
+    "Wan 2.2 is creating your video...";
 
-      errorBox.style.display =
-        "none";
+    queueDisplay.textContent =
+    "Processing";
 
-      errorBox.textContent =
-        "";
 
-    }
+    if(
+     typeof event.eta
+     ==="number"
+    )
+    etaDisplay.textContent =
+    readableSeconds(event.eta);
 
 
-    /* ===================================== */
-    /* IMAGE PROMPT BUILDERS */
-    /* ===================================== */
+    if(
+     event.progress_data?.[0]?.desc
+    )
+    statusMessage.textContent =
+    event.progress_data[0].desc;
 
-    function realismText() {
+   }
 
-      const preset =
-        document.getElementById(
-          "realismPreset"
-        ).value;
 
+   else if(
+    event.stage==="complete"
+   ){
 
-      if (preset === "iphone") {
+    statusTitle.textContent =
+    "Finishing";
 
-        return `
-          highly realistic iPhone photograph,
-          believable natural lighting,
-          natural skin texture,
-          candid photography,
-          real-world detail,
-          realistic anatomy
-        `;
+    statusMessage.textContent =
+    "Loading generated video...";
 
-      }
+   }
 
 
-      if (preset === "dslr") {
+   else if(
+    event.stage==="error"
+   ){
 
-        return `
-          highly realistic DSLR photography,
-          natural skin texture,
-          professional photographic detail,
-          physically believable lighting,
-          accurate anatomy,
-          realistic depth of field
-        `;
+    throw new Error(
+     event.message ||
+     "The video backend reported an error."
+    );
 
-      }
+   }
 
+  }
 
-      if (preset === "cinematic") {
 
-        return `
-          photorealistic cinematic photograph,
-          realistic film lighting,
-          highly believable texture,
-          realistic skin,
-          realistic anatomy,
-          natural depth and detail
-        `;
+  if(event.type==="data"){
 
-      }
+   finalData =
+   event.data;
 
+  }
 
-      return `
-        highly realistic natural photograph,
-        realistic skin texture,
-        accurate anatomy,
-        believable lighting,
-        real-world photographic detail
-      `;
+ }
 
-    }
 
+ if(!finalData){
 
-    function buildCreatePrompt(
-      userPrompt
-    ) {
+  throw new Error(
+   "The Space completed without returning video data."
+  );
 
-      return `
-        ${realismText()}.
+ }
 
-        ${userPrompt}
 
-        Maintain believable
-        photographic realism,
-        natural proportions
-        and realistic details.
-      `;
+ return finalData;
 
-    }
+}
 
 
-    function buildEditPrompt(
-      userPrompt
-    ) {
+/* GENERATE */
 
-      const precision =
-        document.getElementById(
-          "editPrecision"
-        ).value;
+generateBtn.onclick = async()=>{
 
-      const intensity =
-        document.getElementById(
-          "editIntensity"
-        ).value;
+ clearError();
 
+ result.style.display="none";
+ backendStatus.textContent="";
 
-      const preserve = [];
 
+ const text =
+ prompt.value.trim();
 
-      if (
-        document.getElementById(
-          "preserveIdentity"
-        ).checked
-      ) {
 
-        preserve.push(
-          "the exact same identity and person"
-        );
+ if(!text){
 
-      }
+  showError(
+   "Enter a prompt first."
+  );
 
+  return;
 
-      if (
-        document.getElementById(
-          "preserveLighting"
-        ).checked
-      ) {
+ }
 
-        preserve.push(
-          "the existing lighting"
-        );
 
-      }
+ if(
+  mode==="edit" &&
+  imageData.length===0
+ ){
 
+  showError(
+   "Upload an image first."
+  );
 
-      if (
-        document.getElementById(
-          "preserveBackground"
-        ).checked
-      ) {
+  return;
 
-        preserve.push(
-          "the existing background"
-        );
+ }
 
-      }
 
+ if(
+  mode==="video" &&
+  files.length===0
+ ){
 
-      if (
-        document.getElementById(
-          "preservePose"
-        ).checked
-      ) {
+  showError(
+   "Upload a starting image first."
+  );
 
-        preserve.push(
-          "the existing pose, framing and camera angle"
-        );
+  return;
 
-      }
+ }
 
 
-      if (
-        document.getElementById(
-          "preserveClothes"
-        ).checked
-      ) {
+ generateBtn.disabled=true;
 
-        preserve.push(
-          "the existing clothing"
-        );
+ startStatus();
 
-      }
 
+ try{
 
-      if (
-        document.getElementById(
-          "preserveExpression"
-        ).checked
-      ) {
 
-        preserve.push(
-          "the existing expression"
-        );
+  /* CREATE IMAGE */
 
-      }
+  if(mode==="create"){
 
+   statusTitle.textContent =
+   "Generating";
 
-      let precisionText = "";
+   statusMessage.textContent =
+   "Creating image...";
 
-      if (precision === "strict") {
 
-        precisionText =
-          "Change only what was specifically requested. Do not unnecessarily alter other parts of the image.";
+   const options={
 
-      }
+    model:
+    $("imageModel").value,
 
-      else if (
-        precision === "balanced"
-      ) {
+    quality:
+    $("imageQuality").value,
 
-        precisionText =
-          "Focus closely on the requested change while keeping the overall image consistent.";
+    size:
+    $("imageSize").value
 
-      }
+   };
 
-      else {
 
-        precisionText =
-          "Allow some creative adjustment while following the requested edit.";
+   if(negativePrompt.value.trim())
+   options.negative_prompt =
+   negativePrompt.value.trim();
 
-      }
 
+   const image =
+   await puter.ai.txt2img(
 
-      let intensityText = "";
+    realismPrompt() +
+    ". " +
+    text,
 
-      if (intensity === "subtle") {
+    options
 
-        intensityText =
-          "Keep the requested change subtle and natural.";
+   );
 
-      }
 
-      else if (
-        intensity === "moderate"
-      ) {
+   completeStatus();
 
-        intensityText =
-          "Make the requested change clearly visible while keeping it realistic.";
+   showImage(image);
 
-      }
+  }
 
-      else {
 
-        intensityText =
-          "Make the requested change strong and obvious while maintaining realism.";
+  /* EDIT IMAGE */
 
-      }
+  else if(mode==="edit"){
 
+   statusTitle.textContent =
+   "Editing";
 
-      return `
-        Edit the supplied image.
+   statusMessage.textContent =
+   "Editing image...";
 
-        ${realismText()}.
 
-        Requested edit:
-        ${userPrompt}
+   const options={
 
-        ${intensityText}
+    model:
+    $("imageModel").value,
 
-        ${precisionText}
+    quality:
+    $("imageQuality").value,
 
-        Preserve:
-        ${preserve.join(", ")}.
+    size:
+    $("imageSize").value,
 
-        Maintain photographic realism.
-      `;
+    input_images:
+    imageData
 
-    }
+   };
 
 
-    /* ===================================== */
-    /* RESULT DISPLAY */
-    /* ===================================== */
+   if(negativePrompt.value.trim())
+   options.negative_prompt =
+   negativePrompt.value.trim();
 
-    function showImageResult(
-      imageValue
-    ) {
 
-      resultMedia.innerHTML =
-        "";
+   const image =
+   await puter.ai.txt2img(
 
+    buildEditPrompt(text),
 
-      if (
-        imageValue
-        instanceof HTMLElement
-      ) {
+    options
 
-        resultMedia.appendChild(
-          imageValue
-        );
+   );
 
-      }
 
-      else {
+   completeStatus();
 
-        const image =
-          document.createElement(
-            "img"
-          );
+   showImage(image);
 
-        image.src =
-          imageValue;
+  }
 
-        resultMedia.appendChild(
-          image
-        );
 
-      }
+  /* VIDEO */
 
+  else if(mode==="video"){
 
-      result.style.display =
-        "block";
+   const client =
+   await connectVideo();
 
-      result.scrollIntoView({
-        behavior: "smooth"
-      });
 
-    }
+   statusTitle.textContent =
+   "Submitting";
 
+   statusMessage.textContent =
+   "Sending video request...";
 
-    function showVideoResult(
-      videoURL
-    ) {
 
-      resultMedia.innerHTML =
-        "";
+   const firstImage =
+   handle_file(files[0]);
 
 
-      const video =
-        document.createElement(
-          "video"
-        );
+   const lastImage =
+   files[1]
+   ? handle_file(files[1])
+   : null;
 
 
-      video.src =
-        videoURL;
+   const negative =
+   negativePrompt.value.trim() ||
+   "blurry, static, distorted anatomy, low quality, artifacts, malformed hands, malformed face";
 
-      video.controls =
-        true;
 
-      video.playsInline =
-        true;
+   /*
+   API order for SarahCole2008 Space:
 
-      video.preload =
-        "metadata";
+   1 input image
+   2 last image
+   3 prompt
+   4 steps
+   5 negative prompt
+   6 duration
+   7 guidance
+   8 guidance 2
+   9 seed
+   10 randomize seed
+   11 quality
+   12 scheduler
+   13 flow shift
+   14 FPS multiplier
+   15 busy protection / safe mode
+   16 display result
+   */
 
 
-      resultMedia.appendChild(
-        video
-      );
+   const data =
+   await runVideo(
+    client,
+    [
+     firstImage,
+     lastImage,
+     text,
+     Number($("steps").value),
+     negative,
+     Number($("duration").value),
+     Number($("guidance").value),
+     Number($("guidance2").value),
+     42,
+     true,
+     Number($("quality").value),
+     "UniPCMultistep",
+     3.0,
+     Number($("fps").value),
+     $("busyProtection").checked,
+     true
+    ]
+   );
 
 
-      result.style.display =
-        "block";
+   /*
+   Returns:
 
+   0 = video player file
+   1 = download file
+   2 = seed
+   */
 
-      result.scrollIntoView({
-        behavior: "smooth"
-      });
 
-    }
+   const videoURL =
+   getURL(data[0]) ||
+   getURL(data[1]);
 
 
-    /* ===================================== */
-    /* FILE URL EXTRACTION */
-    /* ===================================== */
+   if(!videoURL){
 
-    function getResultURL(value) {
+    throw new Error(
+     "Generation finished but no playable video was returned."
+    );
 
-      if (!value) {
+   }
 
-        return null;
 
-      }
+   completeStatus();
 
+   showVideo(videoURL);
 
-      if (
-        typeof value === "string"
-      ) {
 
-        return value;
+   backendStatus.textContent =
+   "Seed: " +
+   data[2];
 
-      }
+  }
 
 
-      if (value.url) {
+ }catch(e){
 
-        return value.url;
+  console.error(e);
 
-      }
+  stopTimer();
 
+  spinner.style.display="none";
 
-      if (
-        value.path &&
-        String(value.path)
-          .startsWith("http")
-      ) {
+  statusTitle.textContent =
+  "Failed";
 
-        return value.path;
+  statusMessage.textContent =
+  e?.message ||
+  "Generation failed.";
 
-      }
+  showError(
+   e?.message ||
+   "Generation failed."
+  );
 
+ }
 
-      if (
-        value.name &&
-        String(value.name)
-          .startsWith("http")
-      ) {
 
-        return value.name;
+ finally{
 
-      }
+  generateBtn.disabled=false;
 
+ }
 
-      return null;
+};
 
-    }
-
-
-    /* ===================================== */
-    /* TIME HELPERS */
-    /* ===================================== */
-
-    function readableSeconds(
-      value
-    ) {
-
-      if (
-        value === undefined ||
-        value === null
-      ) {
-
-        return "—";
-
-      }
-
-
-      const seconds =
-        Math.max(
-          0,
-          Math.round(
-            Number(value)
-          )
-        );
-
-
-      if (
-        Number.isNaN(seconds)
-      ) {
-
-        return "—";
-
-      }
-
-
-      if (seconds < 60) {
-
-        return `${seconds}s`;
-
-      }
-
-
-      const minutes =
-        Math.floor(
-          seconds / 60
-        );
-
-      const remainder =
-        seconds % 60;
-
-
-      if (remainder === 0) {
-
-        return `${minutes}m`;
-
-      }
-
-
-      return `${minutes}m ${remainder}s`;
-
-    }
-
-
-    /* ===================================== */
-    /* LIVE TIMER */
-    /* ===================================== */
-
-    function startTimer() {
-
-      stopTimer();
-
-      jobStartTime =
-        Date.now();
-
-      elapsedValue.textContent =
-        "0s";
-
-
-      timerInterval =
-        setInterval(
-          () => {
-
-            const elapsed =
-              (Date.now() -
-                jobStartTime)
-              / 1000;
-
-            elapsedValue.textContent =
-              readableSeconds(
-                elapsed
-              );
-
-          },
-          1000
-        );
-
-    }
-
-
-    function stopTimer() {
-
-      if (timerInterval) {
-
-        clearInterval(
-          timerInterval
-        );
-
-      }
-
-      timerInterval =
-        null;
-
-    }
-
-
-    /* ===================================== */
-    /* STATUS PANEL */
-    /* ===================================== */
-
-    function resetStatus() {
-
-      statusPanel.style.display =
-        "block";
-
-      spinner.style.display =
-        "block";
-
-      statusTitle.textContent =
-        "Preparing...";
-
-      statusMessage.textContent =
-        "Starting generation...";
-
-      queueValue.textContent =
-        "—";
-
-      etaValue.textContent =
-        "—";
-
-      progressBar.style.width =
-        "";
-
-      progressBar.classList.add(
-        "indeterminate"
-      );
-
-      startTimer();
-
-    }
-
-
-    function updateProgress(
-      percent
-    ) {
-
-      if (
-        typeof percent !== "number" ||
-        Number.isNaN(percent)
-      ) {
-
-        progressBar.classList.add(
-          "indeterminate"
-        );
-
-        progressBar.style.width =
-          "";
-
-        return;
-
-      }
-
-
-      const safePercent =
-        Math.max(
-          0,
-          Math.min(
-            100,
-            percent
-          )
-        );
-
-
-      progressBar.classList.remove(
-        "indeterminate"
-      );
-
-      progressBar.style.width =
-        safePercent + "%";
-
-    }
-
-
-    function markComplete() {
-
-      statusTitle.textContent =
-        "Complete";
-
-      statusMessage.textContent =
-        "Video finished.";
-
-      spinner.style.display =
-        "none";
-
-      queueValue.textContent =
-        "Done";
-
-      etaValue.textContent =
-        "0s";
-
-      updateProgress(
-        100
-      );
-
-      stopTimer();
-
-    }
-
-
-    /* ===================================== */
-    /* CONNECT TO WATAHEEEE */
-    /* ===================================== */
-
-    async function connectVideoClient() {
-
-      if (videoClient) {
-
-        return videoClient;
-
-      }
-
-
-      statusTitle.textContent =
-        "Connecting";
-
-      statusMessage.textContent =
-        "Connecting to the video Space...";
-
-
-      videoClient =
-        await Client.connect(
-          VIDEO_SPACE,
-          {
-
-            /*
-              IMPORTANT:
-              Request BOTH data and status
-              events so we receive queue
-              updates.
-            */
-
-            events: [
-              "data",
-              "status"
-            ],
-
-
-            status_callback:
-              (spaceStatus) => {
-
-                console.log(
-                  "Space status:",
-                  spaceStatus
-                );
-
-
-                if (!spaceStatus) {
-
-                  return;
-
-                }
-
-
-                if (
-                  spaceStatus.status
-                  === "sleeping"
-                ) {
-
-                  statusTitle.textContent =
-                    "Waking AI";
-
-                  statusMessage.textContent =
-                    "The video Space is waking up...";
-
-                }
-
-
-                else if (
-                  spaceStatus.status
-                  === "building"
-                ) {
-
-                  statusTitle.textContent =
-                    "Starting AI";
-
-                  statusMessage.textContent =
-                    "The video Space is starting...";
-
-                }
-
-
-                else if (
-                  spaceStatus.status
-                  === "running"
-                ) {
-
-                  statusTitle.textContent =
-                    "Connected";
-
-                  statusMessage.textContent =
-                    "Video engine is ready.";
-
-                }
-
-
-                else if (
-                  spaceStatus.status
-                  === "error" ||
-                  spaceStatus.status
-                  === "space_error"
-                ) {
-
-                  statusTitle.textContent =
-                    "Backend error";
-
-                  statusMessage.textContent =
-                    spaceStatus.message ||
-                    "The video Space reported an error.";
-
-                }
-
-              }
-
-          }
-        );
-
-
-      return videoClient;
-
-    }
-
-
-    /* ===================================== */
-    /* WATAHEEEE LIVE GENERATION */
-    /* ===================================== */
-
-    async function generateVideoWithProgress(
-      client,
-      payload
-    ) {
-
-      /*
-        Gradio submit() returns an
-        async iterator.
-
-        Do NOT await submit().
-      */
-
-      const submission =
-        client.submit(
-          "/generate_video",
-          payload
-        );
-
-
-      let finalData =
-        null;
-
-
-      for await (
-        const event
-        of submission
-      ) {
-
-        console.log(
-          "Gradio event:",
-          event
-        );
-
-
-        /* ------------------------- */
-        /* STATUS EVENT */
-        /* ------------------------- */
-
-        if (
-          event.type === "status"
-        ) {
-
-          const stage =
-            event.stage;
-
-
-          /* QUEUED */
-
-          if (
-            stage === "pending"
-          ) {
-
-            statusTitle.textContent =
-              "Queued";
-
-            statusMessage.textContent =
-              "Waiting for the video GPU...";
-
-
-            if (
-              typeof event.position
-              === "number"
-            ) {
-
-              queueValue.textContent =
-                event.position;
-
-            }
-
-            else {
-
-              queueValue.textContent =
-                "Waiting";
-
-            }
-
-
-            if (
-              typeof event.eta
-              === "number"
-            ) {
-
-              etaValue.textContent =
-                readableSeconds(
-                  event.eta
-                );
-
-            }
-
-            else {
-
-              etaValue.textContent =
-                "—";
-
-            }
-
-
-            updateProgress(
-              null
-            );
-
-          }
-
-
-          /* GENERATING */
-
-          else if (
-            stage === "generating"
-          ) {
-
-            statusTitle.textContent =
-              "Generating";
-
-            statusMessage.textContent =
-              "The AI is creating your video...";
-
-            queueValue.textContent =
-              "Processing";
-
-
-            if (
-              typeof event.eta
-              === "number"
-            ) {
-
-              etaValue.textContent =
-                readableSeconds(
-                  event.eta
-                );
-
-            }
-
-
-            const progress =
-              event.progress_data;
-
-
-            if (
-              Array.isArray(progress) &&
-              progress.length > 0
-            ) {
-
-              const p =
-                progress[0];
-
-
-              if (
-                p &&
-                typeof p.progress
-                === "number"
-              ) {
-
-                updateProgress(
-                  p.progress * 100
-                );
-
-              }
-
-              else if (
-                p &&
-                typeof p.index
-                  === "number" &&
-                typeof p.length
-                  === "number" &&
-                p.length > 0
-              ) {
-
-                updateProgress(
-                  (
-                    p.index /
-                    p.length
-                  ) * 100
-                );
-
-              }
-
-
-              if (
-                p &&
-                p.desc
-              ) {
-
-                statusMessage.textContent =
-                  p.desc;
-
-              }
-
-            }
-
-          }
-
-
-          /* COMPLETE */
-
-          else if (
-            stage === "complete"
-          ) {
-
-            statusTitle.textContent =
-              "Finishing";
-
-            statusMessage.textContent =
-              "Video complete. Loading result...";
-
-            queueValue.textContent =
-              "Done";
-
-            etaValue.textContent =
-              "0s";
-
-            updateProgress(
-              100
-            );
-
-          }
-
-
-          /* ERROR */
-
-          else if (
-            stage === "error"
-          ) {
-
-            throw new Error(
-              event.message ||
-              "The video generation failed."
-            );
-
-          }
-
-        }
-
-
-        /* ------------------------- */
-        /* DATA EVENT */
-        /* ------------------------- */
-
-        if (
-          event.type === "data"
-        ) {
-
-          finalData =
-            event.data;
-
-        }
-
-      }
-
-
-      if (!finalData) {
-
-        throw new Error(
-          "The Space finished but no video result was returned."
-        );
-
-      }
-
-
-      return finalData;
-
-    }
-
-
-    /* ===================================== */
-    /* MAIN GENERATE BUTTON */
-    /* ===================================== */
-
-    generateBtn.onclick =
-      async () => {
-
-        clearError();
-
-        result.style.display =
-          "none";
-
-        backendStatus.textContent =
-          "";
-
-        resultMedia.innerHTML =
-          "";
-
-
-        const userPrompt =
-          prompt.value.trim();
-
-
-        if (!userPrompt) {
-
-          showError(
-            "Enter a prompt first."
-          );
-
-          return;
-
-        }
-
-
-        if (
-          mode === "edit" &&
-          referenceImages.length === 0
-        ) {
-
-          showError(
-            "Upload an image to edit first."
-          );
-
-          return;
-
-        }
-
-
-        if (
-          mode === "video" &&
-          referenceFiles.length === 0
-        ) {
-
-          showError(
-            "Upload a starting image first."
-          );
-
-          return;
-
-        }
-
-
-        generateBtn.disabled =
-          true;
-
-        resetStatus();
-
-
-        try {
-
-
-          /* ====================== */
-          /* CREATE IMAGE */
-          /* ====================== */
-
-          if (
-            mode === "create"
-          ) {
-
-            statusTitle.textContent =
-              "Generating";
-
-            statusMessage.textContent =
-              "Creating image...";
-
-            queueValue.textContent =
-              "—";
-
-            etaValue.textContent =
-              "—";
-
-
-            if (!window.puter) {
-
-              throw new Error(
-                "Puter did not load."
-              );
-
-            }
-
-
-            const model =
-              document.getElementById(
-                "imageModel"
-              ).value;
-
-
-            const quality =
-              document.getElementById(
-                "imageQuality"
-              ).value;
-
-
-            const size =
-              document.getElementById(
-                "aspectRatio"
-              ).value;
-
-
-            const options = {
-
-              model,
-              quality,
-              size
-
-            };
-
-
-            const userNegative =
-              negativePrompt.value.trim();
-
-
-            if (userNegative) {
-
-              options.negative_prompt =
-                userNegative;
-
-            }
-
-
-            const generatedImage =
-              await puter.ai.txt2img(
-
-                buildCreatePrompt(
-                  userPrompt
-                ),
-
-                options
-
-              );
-
-
-            markComplete();
-
-            showImageResult(
-              generatedImage
-            );
-
-          }
-
-
-          /* ====================== */
-          /* EDIT IMAGE */
-          /* ====================== */
-
-          else if (
-            mode === "edit"
-          ) {
-
-            statusTitle.textContent =
-              "Editing";
-
-            statusMessage.textContent =
-              "Editing your image...";
-
-
-            if (!window.puter) {
-
-              throw new Error(
-                "Puter did not load."
-              );
-
-            }
-
-
-            const model =
-              document.getElementById(
-                "imageModel"
-              ).value;
-
-
-            const quality =
-              document.getElementById(
-                "imageQuality"
-              ).value;
-
-
-            const size =
-              document.getElementById(
-                "aspectRatio"
-              ).value;
-
-
-            const options = {
-
-              model,
-              quality,
-              size,
-              input_images:
-                referenceImages
-
-            };
-
-
-            const userNegative =
-              negativePrompt.value.trim();
-
-
-            if (userNegative) {
-
-              options.negative_prompt =
-                userNegative;
-
-            }
-
-
-            const editedImage =
-              await puter.ai.txt2img(
-
-                buildEditPrompt(
-                  userPrompt
-                ),
-
-                options
-
-              );
-
-
-            markComplete();
-
-            showImageResult(
-              editedImage
-            );
-
-          }
-
-
-          /* ====================== */
-          /* CREATE VIDEO */
-          /* ====================== */
-
-          else if (
-            mode === "video"
-          ) {
-
-            const client =
-              await connectVideoClient();
-
-
-            statusTitle.textContent =
-              "Submitting";
-
-            statusMessage.textContent =
-              "Sending your image to the video engine...";
-
-
-            const motionStrength =
-              Number(
-                document.getElementById(
-                  "motionStrength"
-                ).value
-              );
-
-
-            const numFrames =
-              Number(
-                document.getElementById(
-                  "numFrames"
-                ).value
-              );
-
-
-            const steps =
-              Number(
-                document.getElementById(
-                  "videoSteps"
-                ).value
-              );
-
-
-            const uploadedImage =
-              handle_file(
-                referenceFiles[0]
-              );
-
-
-            /*
-              Exact Wataheeee API order:
-
-              1. image
-              2. prompt
-              3. motion strength
-              4. frames
-              5. steps
-            */
-
-            const returnedData =
-              await generateVideoWithProgress(
-
-                client,
-
-                [
-                  uploadedImage,
-                  userPrompt,
-                  motionStrength,
-                  numFrames,
-                  steps
-                ]
-
-              );
-
-
-            /*
-              Returned values:
-
-              [0] video
-              [1] status text
-            */
-
-            const videoFile =
-              returnedData[0];
-
-
-            const statusText =
-              returnedData[1];
-
-
-            const videoURL =
-              getResultURL(
-                videoFile
-              );
-
-
-            if (!videoURL) {
-
-              throw new Error(
-                statusText ||
-                "Video was generated but no playable video URL was returned."
-              );
-
-            }
-
-
-            markComplete();
-
-
-            showVideoResult(
-              videoURL
-            );
-
-
-            if (statusText) {
-
-              backendStatus.textContent =
-                statusText;
-
-            }
-
-          }
-
-        }
-
-
-        catch (e) {
-
-          console.error(e);
-
-          stopTimer();
-
-          spinner.style.display =
-            "none";
-
-          statusTitle.textContent =
-            "Generation failed";
-
-          statusMessage.textContent =
-            e?.message ||
-            "Unknown error";
-
-          showError(
-            e?.message ||
-            "Generation failed."
-          );
-
-        }
-
-
-        finally {
-
-          generateBtn.disabled =
-            false;
-
-        }
-
-      };
-
-  </script>
+</script>
 
 </body>
-
 </html>
