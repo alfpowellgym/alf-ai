@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Space API Inspector</title>
+</head>
+
+<body style="background:#111;color:white;font-family:sans-serif;padding:20px;">
+
+<h2>Hugging Face API Inspector</h2>
+
+<p id="status">Connecting...</p>
+
+<pre id="output"
+style="
+white-space:pre-wrap;
+word-break:break-word;
+background:#222;
+padding:15px;
+border-radius:12px;
+font-size:12px;
+"></pre>
+
+<script type="module">
+
+import { Client }
+from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
+
+const SPACE = "sunfixer/Wataheeee";
+
+const status = document.getElementById("status");
+const output = document.getElementById("output");
+
+try {
+
+  const client = await Client.connect(SPACE);
+
+  status.textContent = "Connected. Reading API...";
+
+  const api = await client.view_api();
+
+  output.textContent =
+    JSON.stringify(api, null, 2);
+
+  status.textContent = "Done.";
+
+} catch (e) {
+
+  status.textContent = "Failed";
+
+  output.textContent =
+    e.message || String(e);
+
+}
+
+</script>
+
+</body>
+</html>
