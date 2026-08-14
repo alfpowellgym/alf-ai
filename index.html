@@ -14,7 +14,7 @@
       color: white;
     }
     .wrap {
-      max-width: 760px;
+      max-width: 820px;
       margin: auto;
       padding: 20px 16px 60px;
     }
@@ -56,7 +56,7 @@
       font-weight: 700;
       font-size: 14px;
     }
-    textarea, select {
+    textarea, select, input[type="text"] {
       width: 100%;
       border-radius: 12px;
       border: 1px solid #3a3a45;
@@ -114,6 +114,16 @@
       color: #aaa;
       line-height: 1.4;
     }
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .grid3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
     #status {
       display: none;
       text-align: center;
@@ -147,12 +157,47 @@
       border-radius: 14px;
       display: block;
     }
+    .checks {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #111117;
+      border: 1px solid #30303a;
+      border-radius: 12px;
+      padding: 10px;
+    }
+    .check input {
+      width: auto;
+      transform: scale(1.2);
+    }
+    .sectionTitle {
+      font-size: 13px;
+      color: #cfcfcf;
+      margin-bottom: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .noteBox {
+      background: #101015;
+      border: 1px solid #2b2b33;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      color: #bdbdc8;
+      line-height: 1.45;
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <h1>ALF AI</h1>
-    <div class="sub">Image & video generator</div>
+    <div class="sub">Ultra realistic image & video generator</div>
 
     <button id="loginBtn" class="secondary">Sign in to Puter</button>
 
@@ -171,6 +216,10 @@
         <input id="fileInput" type="file" accept="image/*" multiple />
         <div id="previews" class="previewGrid"></div>
       </div>
+      <div class="small" style="margin-top:10px;">
+        For edits, upload the image you want changed.  
+        For videos, the first uploaded image is treated as the main reference.
+      </div>
     </div>
 
     <div class="card">
@@ -178,29 +227,159 @@
       <textarea id="prompt" placeholder="A highly realistic portrait photo of a man standing in London at night..."></textarea>
     </div>
 
+    <div class="card">
+      <label>Negative prompt (optional)</label>
+      <textarea id="negativePrompt" placeholder="blurry, warped face, extra fingers, low detail, unrealistic skin, bad anatomy..."></textarea>
+      <div class="small" style="margin-top:8px;">
+        Use this to tell the AI what to avoid.
+      </div>
+    </div>
+
     <div class="card" id="imageSettings">
-      <label>Image model</label>
-      <select id="imageModel">
-        <option value="gpt-image-1-mini">GPT Image Mini</option>
-        <option value="gemini-2.5-flash-image-preview">Gemini Image</option>
-        <option value="grok-imagine-image">Grok Imagine</option>
-      </select>
+      <div class="sectionTitle">Image realism controls</div>
+
+      <div class="grid2">
+        <div>
+          <label>Realism style</label>
+          <select id="realismPreset">
+            <option value="natural">Natural Photo</option>
+            <option value="iphone">iPhone Photo</option>
+            <option value="dslr">DSLR Portrait</option>
+            <option value="cinematic">Cinematic Film</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Image model</label>
+          <select id="imageModel">
+            <option value="gpt-image-1-mini">GPT Image Mini</option>
+            <option value="gemini-2.5-flash-image-preview">Gemini Image</option>
+            <option value="grok-imagine-image">Grok Imagine</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Quality</label>
+          <select id="imageQuality">
+            <option value="low">Standard</option>
+            <option value="medium">High</option>
+            <option value="high">Extreme</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Aspect ratio</label>
+          <select id="aspectRatio">
+            <option value="1024x1024">Square</option>
+            <option value="832x1216">Portrait</option>
+            <option value="1216x832">Landscape</option>
+            <option value="1080x1920">Story / Vertical</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="editSettings">
+      <div class="sectionTitle">Edit controls</div>
+
+      <div class="grid2">
+        <div>
+          <label>Edit precision</label>
+          <select id="editPrecision">
+            <option value="loose">Loose / creative</option>
+            <option value="balanced">Balanced</option>
+            <option value="strict">Change only requested thing</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Edit intensity</label>
+          <select id="editIntensity">
+            <option value="subtle">Subtle</option>
+            <option value="moderate">Moderate</option>
+            <option value="strong">Strong</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;">
+        <label>Preserve</label>
+        <div class="checks">
+          <label class="check"><input type="checkbox" id="preserveIdentity" checked> Identity / same person</label>
+          <label class="check"><input type="checkbox" id="preserveLighting" checked> Lighting</label>
+          <label class="check"><input type="checkbox" id="preserveBackground" checked> Background</label>
+          <label class="check"><input type="checkbox" id="preservePose" checked> Pose / framing</label>
+          <label class="check"><input type="checkbox" id="preserveClothes"> Clothes</label>
+          <label class="check"><input type="checkbox" id="preserveExpression" checked> Expression</label>
+        </div>
+      </div>
+
+      <div class="noteBox" style="margin-top:14px;">
+        This helps the AI preserve the original look while only changing what you asked for.
+      </div>
     </div>
 
     <div id="videoSettings" class="card hidden">
-      <label>Video model</label>
-      <select id="videoModel">
-        <option value="veo-3.1-fast-generate-preview">Veo Fast</option>
-        <option value="veo-3.1-lite-generate-preview">Veo Lite</option>
-        <option value="sora-2">Sora 2</option>
-      </select>
-      <br><br>
-      <label>Length</label>
-      <select id="videoSeconds">
-        <option value="4">4 seconds</option>
-        <option value="6">6 seconds</option>
-        <option value="8">8 seconds</option>
-      </select>
+      <div class="sectionTitle">Video realism controls</div>
+
+      <div class="grid2">
+        <div>
+          <label>Video model</label>
+          <select id="videoModel">
+            <option value="veo-3.1-fast-generate-preview">Veo Fast</option>
+            <option value="veo-3.1-lite-generate-preview">Veo Lite</option>
+            <option value="sora-2">Sora 2</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Length</label>
+          <select id="videoSeconds">
+            <option value="4">4 seconds</option>
+            <option value="6">6 seconds</option>
+            <option value="8">8 seconds</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Resolution</label>
+          <select id="videoResolution">
+            <option value="1280x720">720p</option>
+            <option value="1920x1080">1080p</option>
+            <option value="3840x2160">4K</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Realism style</label>
+          <select id="videoRealismPreset">
+            <option value="natural">Natural</option>
+            <option value="iphone">iPhone footage</option>
+            <option value="cinematic">Cinematic</option>
+            <option value="documentary">Documentary</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Camera movement</label>
+          <select id="cameraMotion">
+            <option value="static">Static camera</option>
+            <option value="handheld">Handheld</option>
+            <option value="pushin">Slow push-in</option>
+            <option value="tracking">Tracking shot</option>
+            <option value="drone">Drone style</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Motion amount</label>
+          <select id="motionAmount">
+            <option value="subtle">Subtle</option>
+            <option value="normal">Normal</option>
+            <option value="dramatic">Dramatic</option>
+          </select>
+        </div>
+      </div>
     </div>
 
     <div id="error"></div>
@@ -210,7 +389,7 @@
     <div id="status">
       <div class="spinner"></div>
       <div id="statusText">Generating...</div>
-      <div class="small">Video can take longer than image generation.</div>
+      <div class="small">Higher-quality video can take a while.</div>
     </div>
 
     <div id="result" class="card">
@@ -227,7 +406,10 @@
     const uploadCard = document.getElementById("uploadCard");
     const videoSettings = document.getElementById("videoSettings");
     const imageSettings = document.getElementById("imageSettings");
+    const editSettings = document.getElementById("editSettings");
+
     const prompt = document.getElementById("prompt");
+    const negativePrompt = document.getElementById("negativePrompt");
     const promptTitle = document.getElementById("promptTitle");
     const fileInput = document.getElementById("fileInput");
     const previews = document.getElementById("previews");
@@ -272,8 +454,9 @@
           uploadCard.classList.add("hidden");
           videoSettings.classList.add("hidden");
           imageSettings.classList.remove("hidden");
+          editSettings.classList.add("hidden");
           promptTitle.textContent = "Describe the image";
-          prompt.placeholder = "A highly realistic portrait photo...";
+          prompt.placeholder = "A highly realistic portrait photo of a man standing in London at night...";
           generateBtn.textContent = "Generate Image";
         }
 
@@ -281,6 +464,7 @@
           uploadCard.classList.remove("hidden");
           videoSettings.classList.add("hidden");
           imageSettings.classList.remove("hidden");
+          editSettings.classList.remove("hidden");
           promptTitle.textContent = "What should I change?";
           prompt.placeholder = "Make the person's nose slightly bigger while keeping the same identity, lighting and background.";
           generateBtn.textContent = "Edit Image";
@@ -290,8 +474,9 @@
           uploadCard.classList.remove("hidden");
           videoSettings.classList.remove("hidden");
           imageSettings.classList.add("hidden");
+          editSettings.classList.add("hidden");
           promptTitle.textContent = "Describe the video";
-          prompt.placeholder = "Create a realistic cinematic video of this person walking slowly toward the camera...";
+          prompt.placeholder = "Create a realistic cinematic video of this person slowly turning and blinking naturally.";
           generateBtn.textContent = "Generate Video";
         }
       };
@@ -329,13 +514,101 @@
       error.style.display = "none";
     }
 
+    function getRealismPrompt(preset) {
+      if (preset === "iphone") {
+        return "ultra realistic iphone photo, natural candid look, realistic skin texture, natural lighting, everyday realism, believable details";
+      }
+      if (preset === "dslr") {
+        return "ultra realistic DSLR portrait photo, sharp focus, natural skin texture, true-to-life tones, shallow depth of field, professional photography";
+      }
+      if (preset === "cinematic") {
+        return "ultra realistic cinematic photography, dramatic but realistic lighting, filmic detail, highly believable textures, realistic skin and anatomy";
+      }
+      if (preset === "documentary") {
+        return "ultra realistic documentary footage, natural movement, believable camera behavior, realistic lighting and skin texture";
+      }
+      return "ultra realistic natural photograph, realistic skin texture, highly believable lighting, accurate anatomy, true-to-life detail";
+    }
+
+    function buildPreserveText() {
+      const preserve = [];
+
+      if (document.getElementById("preserveIdentity")?.checked) preserve.push("the exact same person and identity");
+      if (document.getElementById("preserveExpression")?.checked) preserve.push("the same expression");
+      if (document.getElementById("preserveLighting")?.checked) preserve.push("the same lighting");
+      if (document.getElementById("preserveBackground")?.checked) preserve.push("the same background");
+      if (document.getElementById("preservePose")?.checked) preserve.push("the same pose, framing and camera angle");
+      if (document.getElementById("preserveClothes")?.checked) preserve.push("the same clothing");
+
+      if (preserve.length === 0) return "";
+      return "Preserve " + preserve.join(", ") + ".";
+    }
+
+    function buildEditPrompt(userPrompt) {
+      const realism = getRealismPrompt(document.getElementById("realismPreset").value);
+      const precision = document.getElementById("editPrecision").value;
+      const intensity = document.getElementById("editIntensity").value;
+
+      let precisionText = "";
+      if (precision === "strict") {
+        precisionText = "Change only the specifically requested feature and do not alter anything else unless absolutely necessary.";
+      } else if (precision === "balanced") {
+        precisionText = "Focus mainly on the requested change while keeping the overall image consistent.";
+      } else {
+        precisionText = "You may make broader creative adjustments if they improve the result.";
+      }
+
+      let intensityText = "";
+      if (intensity === "subtle") {
+        intensityText = "Keep the change subtle and natural-looking.";
+      } else if (intensity === "moderate") {
+        intensityText = "Make the change noticeable but still realistic.";
+      } else {
+        intensityText = "Make the change strong and clearly visible, while still realistic.";
+      }
+
+      return `${realism}. Edit the uploaded image. ${userPrompt}. ${intensityText} ${precisionText} ${buildPreserveText()} Maintain photographic realism and believable anatomy.`;
+    }
+
+    function buildCreatePrompt(userPrompt) {
+      const realism = getRealismPrompt(document.getElementById("realismPreset").value);
+      return `${realism}. ${userPrompt}. High detail, realistic anatomy, realistic textures, realistic lighting, professional-quality photo realism.`;
+    }
+
+    function buildVideoPrompt(userPrompt) {
+      const realism = getRealismPrompt(document.getElementById("videoRealismPreset").value);
+      const camera = document.getElementById("cameraMotion").value;
+      const motion = document.getElementById("motionAmount").value;
+
+      let cameraText = "";
+      if (camera === "static") cameraText = "Use a static camera.";
+      if (camera === "handheld") cameraText = "Use realistic handheld camera movement.";
+      if (camera === "pushin") cameraText = "Use a slow push-in camera movement.";
+      if (camera === "tracking") cameraText = "Use a smooth tracking shot.";
+      if (camera === "drone") cameraText = "Use a realistic drone-style camera move.";
+
+      let motionText = "";
+      if (motion === "subtle") motionText = "Keep movement subtle, calm and natural.";
+      if (motion === "normal") motionText = "Use natural realistic motion.";
+      if (motion === "dramatic") motionText = "Use stronger more dramatic motion while staying realistic.";
+
+      let referenceText = "";
+      if (referenceImages.length > 0) {
+        referenceText = "Preserve the appearance of the uploaded reference image.";
+      }
+
+      return `${realism}. ${userPrompt}. ${cameraText} ${motionText} ${referenceText} Keep faces, anatomy, lighting and movement realistic and coherent.`;
+    }
+
     generateBtn.onclick = async () => {
       clearError();
       result.style.display = "none";
       resultMedia.innerHTML = "";
 
-      const instruction = prompt.value.trim();
-      if (!instruction) {
+      const userPrompt = prompt.value.trim();
+      const userNegative = negativePrompt.value.trim();
+
+      if (!userPrompt) {
         showError("Enter a prompt first.");
         return;
       }
@@ -351,34 +624,69 @@
       try {
         if (mode === "create") {
           statusText.textContent = "Creating image...";
+
           const model = document.getElementById("imageModel").value;
-          const image = await puter.ai.txt2img(instruction, {
+          const quality = document.getElementById("imageQuality").value;
+          const size = document.getElementById("aspectRatio").value;
+
+          const finalPrompt = buildCreatePrompt(userPrompt);
+
+          const options = {
             model: model,
-            quality: "low"
-          });
+            quality: quality,
+            size: size
+          };
+
+          if (userNegative) {
+            options.negative_prompt = userNegative;
+          }
+
+          const image = await puter.ai.txt2img(finalPrompt, options);
           resultMedia.appendChild(image);
         }
 
         if (mode === "edit") {
           statusText.textContent = "Editing image...";
+
           const model = document.getElementById("imageModel").value;
-          const image = await puter.ai.txt2img(instruction, {
+          const quality = document.getElementById("imageQuality").value;
+          const size = document.getElementById("aspectRatio").value;
+
+          const finalPrompt = buildEditPrompt(userPrompt);
+
+          const options = {
             model: model,
+            quality: quality,
+            size: size,
             input_images: referenceImages
-          });
+          };
+
+          if (userNegative) {
+            options.negative_prompt = userNegative;
+          }
+
+          const image = await puter.ai.txt2img(finalPrompt, options);
           resultMedia.appendChild(image);
         }
 
         if (mode === "video") {
           statusText.textContent = "Generating video...";
+
           const model = document.getElementById("videoModel").value;
           const seconds = Number(document.getElementById("videoSeconds").value);
+          const size = document.getElementById("videoResolution").value;
+
+          const finalPrompt = buildVideoPrompt(userPrompt);
 
           const options = {
             model: model,
             seconds: seconds,
-            size: "1280x720"
+            size: size
           };
+
+          if (userNegative) {
+            options.negative_prompt = userNegative;
+          }
 
           if (referenceImages.length > 0) {
             options.input_reference = referenceImages[0];
@@ -387,7 +695,7 @@
             }
           }
 
-          const video = await puter.ai.txt2vid(instruction, options);
+          const video = await puter.ai.txt2vid(finalPrompt, options);
           resultMedia.appendChild(video);
         }
 
@@ -395,7 +703,7 @@
         result.scrollIntoView({ behavior: "smooth" });
       } catch (e) {
         console.error(e);
-        showError(e?.message || "Generation failed. You may have hit the current free allowance.");
+        showError(e?.message || "Generation failed. You may have hit the current free allowance or chosen a provider/model that is temporarily unavailable.");
       } finally {
         status.style.display = "none";
         generateBtn.disabled = false;
