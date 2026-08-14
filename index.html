@@ -1,1488 +1,2234 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
 <title>ALF AI</title>
 
-<script src="https://js.puter.com/v2/"></script>
-
 <style>
-*{box-sizing:border-box}
-body{
- margin:0;
- background:#0b0b0f;
- color:#fff;
- font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-}
-.wrap{max-width:900px;margin:auto;padding:20px 16px 70px}
-h1{margin:4px 0;font-size:34px}
-.sub{color:#999;margin-bottom:22px}
-.card{
- background:#17171d;
- border:1px solid #2e2e38;
- border-radius:18px;
- padding:16px;
- margin-bottom:15px;
-}
-.tabs{display:flex;gap:8px}
-.tab{
- flex:1;padding:13px 8px;border:0;border-radius:12px;
- background:#292932;color:#ddd;font-weight:800;
-}
-.tab.active{background:white;color:black}
-label{display:block;font-weight:750;font-size:14px;margin-bottom:7px}
-textarea,select,input[type=number]{
- width:100%;background:#0c0c11;color:white;
- border:1px solid #3b3b47;border-radius:12px;
- padding:12px;font-size:16px;
-}
-textarea{min-height:110px;resize:vertical}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.hidden{display:none!important}
-.small{font-size:13px;color:#999;line-height:1.45}
-.upload{
- border:1px dashed #555;border-radius:14px;
- padding:18px;text-align:center;
-}
-.previewGrid{
- display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px
-}
-.previewGrid img{
- width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px
-}
-.btn{
- width:100%;background:white;color:black;border:0;
- padding:16px;border-radius:14px;font-size:17px;font-weight:850;
-}
-.btn:disabled{opacity:.5}
-.secondary{
- width:100%;background:#24242d;color:white;
- border:1px solid #3b3b47;border-radius:12px;
- padding:12px;font-weight:700;margin-bottom:15px
-}
-.note{
- background:#101015;border:1px solid #303039;
- padding:12px;border-radius:12px;color:#bbb;
- font-size:13px;line-height:1.5;
-}
-.check{
- display:flex;gap:8px;align-items:center;
- background:#101015;border:1px solid #303039;
- padding:10px;border-radius:10px;
-}
-#error{
- display:none;background:#441212;border:1px solid #822;
- color:#ffc2c2;padding:13px;border-radius:12px;margin-bottom:15px;
- white-space:pre-wrap;
+
+*{
+box-sizing:border-box;
 }
 
-/* PROGRESS */
+body{
+margin:0;
+background:#09090d;
+color:white;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+
+.wrap{
+max-width:900px;
+margin:auto;
+padding:20px 16px 70px;
+}
+
+h1{
+font-size:36px;
+margin:4px 0;
+letter-spacing:-1px;
+}
+
+.sub{
+color:#999;
+margin-bottom:22px;
+}
+
+.card{
+background:#17171d;
+border:1px solid #303039;
+border-radius:18px;
+padding:16px;
+margin-bottom:15px;
+}
+
+.tabs{
+display:flex;
+gap:8px;
+}
+
+.tab{
+flex:1;
+border:0;
+border-radius:12px;
+padding:13px;
+background:#292932;
+color:white;
+font-weight:800;
+font-size:14px;
+}
+
+.tab.active{
+background:white;
+color:black;
+}
+
+label{
+display:block;
+font-size:14px;
+font-weight:750;
+margin-bottom:7px;
+}
+
+textarea,
+select,
+input[type="text"],
+input[type="password"]{
+width:100%;
+background:#0d0d12;
+color:white;
+border:1px solid #3a3a45;
+border-radius:12px;
+padding:12px;
+font-size:16px;
+}
+
+textarea{
+min-height:115px;
+resize:vertical;
+}
+
+.small{
+font-size:13px;
+color:#999;
+line-height:1.45;
+}
+
+.grid2{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+}
+
+.hidden{
+display:none!important;
+}
+
+.upload{
+border:1px dashed #555;
+border-radius:14px;
+padding:18px;
+text-align:center;
+}
+
+#preview{
+width:100%;
+max-height:420px;
+object-fit:contain;
+border-radius:12px;
+margin-top:13px;
+display:none;
+}
+
+.btn{
+width:100%;
+background:white;
+color:black;
+border:0;
+border-radius:14px;
+padding:16px;
+font-size:17px;
+font-weight:850;
+}
+
+.btn:disabled{
+opacity:.45;
+}
+
+.secondary{
+background:#25252d;
+color:white;
+border:1px solid #3a3a45;
+border-radius:12px;
+padding:11px 14px;
+font-weight:700;
+}
+
+.note{
+background:#101015;
+border:1px solid #303039;
+border-radius:12px;
+padding:12px;
+color:#bbb;
+font-size:13px;
+line-height:1.5;
+}
+
+#error{
+display:none;
+background:#461313;
+border:1px solid #8b2c2c;
+color:#ffc2c2;
+padding:13px;
+border-radius:12px;
+margin-bottom:15px;
+white-space:pre-wrap;
+}
+
+/* STATUS */
 
 #statusPanel{
- display:none;background:#17171d;border:1px solid #353541;
- border-radius:18px;overflow:hidden;margin-top:15px
+display:none;
+background:#17171d;
+border:1px solid #353540;
+border-radius:18px;
+overflow:hidden;
+margin-top:15px;
 }
-.statusTop{
- display:flex;gap:12px;align-items:center;padding:16px
-}
-.spinner{
- width:25px;height:25px;border:3px solid #444;
- border-top-color:white;border-radius:50%;
- animation:spin .8s linear infinite
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-#statusTitle{font-weight:850;font-size:16px}
-#statusMessage{font-size:13px;color:#aaa;margin-top:3px}
-.progressOuter{height:7px;background:#292932;overflow:hidden}
-#progressBar{
- height:100%;background:white;width:30%;
- animation:move 1.3s ease-in-out infinite
-}
-@keyframes move{
- from{transform:translateX(-120%)}
- to{transform:translateX(350%)}
-}
-.stats{
- display:grid;grid-template-columns:repeat(3,1fr);
- gap:8px;padding:14px
-}
-.stat{
- text-align:center;background:#101015;border:1px solid #292932;
- border-radius:11px;padding:9px
-}
-.stat small{display:block;color:#888;font-size:10px;text-transform:uppercase}
-.stat b{font-size:14px}
 
-#result{display:none;margin-top:15px}
-#result img,#result video{
- width:100%;max-height:75vh;object-fit:contain;
- background:black;border-radius:14px
+.statusTop{
+display:flex;
+align-items:center;
+gap:12px;
+padding:16px;
 }
-#backendStatus{color:#aaa;font-size:13px;margin-top:10px}
+
+.spinner{
+width:25px;
+height:25px;
+border:3px solid #444;
+border-top-color:white;
+border-radius:50%;
+animation:spin .8s linear infinite;
+flex-shrink:0;
+}
+
+@keyframes spin{
+to{transform:rotate(360deg)}
+}
+
+#statusTitle{
+font-size:16px;
+font-weight:850;
+}
+
+#statusMessage{
+font-size:13px;
+color:#aaa;
+margin-top:3px;
+}
+
+.progress{
+height:7px;
+background:#292932;
+overflow:hidden;
+}
+
+.progressBar{
+height:100%;
+width:35%;
+background:white;
+animation:move 1.2s ease-in-out infinite;
+}
+
+@keyframes move{
+from{transform:translateX(-120%)}
+to{transform:translateX(350%)}
+}
+
+.stats{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:8px;
+padding:14px;
+}
+
+.stat{
+background:#101015;
+border:1px solid #292932;
+border-radius:11px;
+padding:10px;
+text-align:center;
+}
+
+.statLabel{
+font-size:10px;
+color:#888;
+text-transform:uppercase;
+}
+
+.statValue{
+font-size:14px;
+font-weight:850;
+margin-top:3px;
+}
+
+/* RESULT */
+
+#result{
+display:none;
+}
+
+#resultImage{
+width:100%;
+max-height:75vh;
+object-fit:contain;
+border-radius:14px;
+background:black;
+}
+
+.resultButtons{
+display:flex;
+gap:8px;
+margin-top:12px;
+}
+
+.resultButtons a{
+flex:1;
+text-align:center;
+text-decoration:none;
+}
+
+.apiRow{
+display:flex;
+gap:8px;
+}
+
+.apiRow input{
+flex:1;
+}
+
+#videoMessage{
+line-height:1.6;
+}
 
 @media(max-width:600px){
- .tabs{flex-direction:column}
- .grid2,.grid3{grid-template-columns:1fr}
+
+.tabs{
+flex-direction:column;
 }
+
+.grid2{
+grid-template-columns:1fr;
+}
+
+.apiRow{
+flex-direction:column;
+}
+
+}
+
 </style>
+
 </head>
+
 
 <body>
 
 <div class="wrap">
 
-<h1>ALF AI</h1>
-<div class="sub">Ultra realistic image & video generator</div>
 
-<button id="loginBtn" class="secondary">Sign in to Puter</button>
+<h1>ALF AI</h1>
+
+<div class="sub">
+Community powered image generation
+</div>
+
+
+<!-- TABS -->
 
 <div class="card">
- <div class="tabs">
-  <button class="tab active" data-mode="create">Create Image</button>
-  <button class="tab" data-mode="edit">Edit Image</button>
-  <button class="tab" data-mode="video">Create Video</button>
- </div>
+
+<div class="tabs">
+
+<button
+class="tab active"
+data-mode="create">
+Create Image
+</button>
+
+<button
+class="tab"
+data-mode="edit">
+Edit Image
+</button>
+
+<button
+class="tab"
+data-mode="video">
+Create Video
+</button>
+
+</div>
+
 </div>
 
 
-<!-- UPLOAD -->
 
-<div id="uploadCard" class="card hidden">
+<!-- API KEY -->
 
- <label id="uploadTitle">Reference image</label>
+<div
+id="apiCard"
+class="card">
 
- <div class="upload">
-  <div id="uploadHelp" class="small">Upload an image.</div>
-  <input id="fileInput" type="file" accept="image/*" multiple>
-  <div id="previews" class="previewGrid"></div>
- </div>
+<label>
+AI Horde API key
+</label>
+
+<div class="apiRow">
+
+<input
+id="apiKey"
+type="password"
+placeholder="Leave blank for free anonymous generation">
+
+<button
+id="saveKey"
+class="secondary">
+Save
+</button>
 
 </div>
+
+<div class="small" style="margin-top:8px;">
+
+You do not need an account.
+
+Leave this blank and ALF AI will use AI Horde's
+official anonymous key.
+
+A personal free AI Horde key normally gives you
+better queue priority.
+
+</div>
+
+</div>
+
+
+
+<!-- EDIT IMAGE UPLOAD -->
+
+<div
+id="uploadCard"
+class="card hidden">
+
+<label>
+Image to edit
+</label>
+
+<div class="upload">
+
+<div class="small">
+Upload the original image you want ALF AI to modify.
+</div>
+
+<br>
+
+<input
+id="fileInput"
+type="file"
+accept="image/*">
+
+<img
+id="preview">
+
+</div>
+
+</div>
+
 
 
 <!-- PROMPT -->
 
-<div class="card">
+<div
+id="promptCard"
+class="card">
 
- <label id="promptTitle">Describe the image</label>
+<label id="promptTitle">
+Describe the image
+</label>
 
- <textarea
- id="prompt"
- placeholder="Describe exactly what you want..."></textarea>
+<textarea
+id="prompt"
+placeholder="Ultra realistic photograph of..."></textarea>
 
 </div>
+
 
 
 <!-- NEGATIVE -->
 
-<div id="negativeCard" class="card">
+<div
+id="negativeCard"
+class="card">
 
- <label>Negative prompt</label>
+<label>
+Negative prompt
+</label>
 
- <textarea
- id="negativePrompt"
- placeholder="blurry, distorted anatomy, low quality, artifacts..."></textarea>
-
-</div>
-
-
-<!-- IMAGE OPTIONS -->
-
-<div id="imageSettings" class="card">
-
- <div class="grid2">
-
-  <div>
-   <label>Realism</label>
-   <select id="realism">
-    <option value="natural">Natural Photo</option>
-    <option value="iphone">iPhone Photo</option>
-    <option value="dslr">DSLR</option>
-    <option value="cinematic">Cinematic</option>
-   </select>
-  </div>
-
-  <div>
-   <label>Model</label>
-   <select id="imageModel">
-    <option value="gpt-image-1-mini">GPT Image Mini</option>
-    <option value="gemini-2.5-flash-image-preview">Gemini Image</option>
-    <option value="grok-imagine-image">Grok Imagine</option>
-   </select>
-  </div>
-
-  <div>
-   <label>Quality</label>
-   <select id="imageQuality">
-    <option value="low">Standard</option>
-    <option value="medium">High</option>
-    <option value="high">Extreme</option>
-   </select>
-  </div>
-
-  <div>
-   <label>Size</label>
-   <select id="imageSize">
-    <option value="1024x1024">Square</option>
-    <option value="832x1216">Portrait</option>
-    <option value="1216x832">Landscape</option>
-   </select>
-  </div>
-
- </div>
+<textarea
+id="negativePrompt"
+placeholder="blurry, distorted anatomy, deformed face, low quality, artifacts..."></textarea>
 
 </div>
 
 
-<!-- EDIT OPTIONS -->
 
-<div id="editSettings" class="card hidden">
+<!-- SETTINGS -->
 
- <div class="grid2">
+<div
+id="settingsCard"
+class="card">
 
-  <div>
-   <label>Edit precision</label>
-   <select id="editPrecision">
-    <option value="balanced">Balanced</option>
-    <option value="strict">Change only requested thing</option>
-    <option value="creative">Creative</option>
-   </select>
-  </div>
+<div class="grid2">
 
-  <div>
-   <label>Edit strength</label>
-   <select id="editStrength">
-    <option value="subtle">Subtle</option>
-    <option value="moderate" selected>Moderate</option>
-    <option value="strong">Strong</option>
-   </select>
-  </div>
 
- </div>
+<div>
 
- <br>
+<label>
+AI model
+</label>
 
- <div class="grid2">
+<select id="model">
 
-  <label class="check">
-   <input id="preserveIdentity" type="checkbox" checked>
-   Preserve identity
-  </label>
+<option value="">
+Loading available models...
+</option>
 
-  <label class="check">
-   <input id="preserveBackground" type="checkbox" checked>
-   Preserve background
-  </label>
+</select>
 
-  <label class="check">
-   <input id="preservePose" type="checkbox" checked>
-   Preserve pose
-  </label>
-
-  <label class="check">
-   <input id="preserveLighting" type="checkbox" checked>
-   Preserve lighting
-  </label>
-
- </div>
+<div
+id="modelInfo"
+class="small"
+style="margin-top:6px;">
+Checking AI Horde workers...
+</div>
 
 </div>
 
 
-<!-- VIDEO OPTIONS -->
+<div>
 
-<div id="videoSettings" class="card hidden">
+<label>
+Image size
+</label>
 
- <div class="note">
-  <b>Video engine:</b> SarahCole2008 / Wan 2.2 14B
-  <br><br>
-  Image 1 = starting frame.
-  <br>
-  Optional image 2 = ending frame.
- </div>
+<select id="size">
 
- <br>
+<option value="512x512">
+512 × 512 — Fast
+</option>
 
- <div class="grid2">
+<option
+value="768x512">
+768 × 512 — Landscape
+</option>
 
-  <div>
-   <label>Video duration</label>
+<option
+value="512x768">
+512 × 768 — Portrait
+</option>
 
-   <select id="duration">
-    <option value="2">2 seconds</option>
-    <option value="3.5" selected>3.5 seconds</option>
-    <option value="5">5 seconds</option>
-    <option value="7">7 seconds</option>
-    <option value="10">10 seconds</option>
-   </select>
-  </div>
+<option
+value="768x768"
+selected>
+768 × 768 — High quality
+</option>
 
+<option value="1024x1024">
+1024 × 1024 — Maximum
+</option>
 
-  <div>
-   <label>Inference steps</label>
-
-   <select id="steps">
-    <option value="4">4 — Fastest</option>
-    <option value="6" selected>6 — Balanced</option>
-    <option value="8">8 — Higher quality</option>
-   </select>
-  </div>
-
-
-  <div>
-   <label>Video quality</label>
-
-   <select id="quality">
-    <option value="4">4 — Fast</option>
-    <option value="6" selected>6 — Balanced</option>
-    <option value="8">8 — High</option>
-    <option value="10">10 — Maximum</option>
-   </select>
-  </div>
-
-
-  <div>
-   <label>Output fluidity</label>
-
-   <select id="fps">
-    <option value="16" selected>16 FPS — Fastest</option>
-    <option value="32">32 FPS — Smooth</option>
-    <option value="64">64 FPS — Very smooth</option>
-   </select>
-  </div>
-
-
-  <div>
-   <label>Prompt guidance</label>
-
-   <select id="guidance">
-    <option value="1" selected>1 — Recommended</option>
-    <option value="1.5">1.5</option>
-    <option value="2">2 — Stronger</option>
-   </select>
-  </div>
-
-
-  <div>
-   <label>Low-noise guidance</label>
-
-   <select id="guidance2">
-    <option value="1" selected>1 — Recommended</option>
-    <option value="1.5">1.5</option>
-    <option value="2">2 — Stronger</option>
-   </select>
-  </div>
-
- </div>
-
- <br>
-
- <label class="check">
-
-  <input id="busyProtection" type="checkbox">
-
-  Busy-server protection (+30% GPU reservation)
-
- </label>
-
- <div class="small" style="margin-top:8px">
-  This is the Space's “Safe Mode”. It is a server reliability
-  setting, not a prompt/content filter.
- </div>
+</select>
 
 </div>
 
+
+<div>
+
+<label>
+Steps
+</label>
+
+<select id="steps">
+
+<option value="10">
+10 — Fast
+</option>
+
+<option
+value="20"
+selected>
+20 — Balanced
+</option>
+
+<option value="30">
+30 — Quality
+</option>
+
+</select>
+
+</div>
+
+
+<div>
+
+<label>
+CFG / Prompt strength
+</label>
+
+<select id="cfg">
+
+<option value="3">
+3 — Loose
+</option>
+
+<option
+value="5"
+selected>
+5 — Natural
+</option>
+
+<option value="7">
+7 — Strong
+</option>
+
+<option value="9">
+9 — Very strong
+</option>
+
+</select>
+
+</div>
+
+
+<div>
+
+<label>
+Sampler
+</label>
+
+<select id="sampler">
+
+<option
+value="k_euler"
+selected>
+Euler
+</option>
+
+<option value="k_euler_a">
+Euler A
+</option>
+
+<option value="k_dpmpp_2m">
+DPM++ 2M
+</option>
+
+<option value="k_dpmpp_sde">
+DPM++ SDE
+</option>
+
+<option value="k_lms">
+LMS
+</option>
+
+</select>
+
+</div>
+
+
+<div
+id="editStrengthBox"
+class="hidden">
+
+<label>
+Edit strength
+</label>
+
+<select id="editStrength">
+
+<option value="0.25">
+Subtle
+</option>
+
+<option
+value="0.45"
+selected>
+Balanced
+</option>
+
+<option value="0.65">
+Strong
+</option>
+
+<option value="0.80">
+Major change
+</option>
+
+</select>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+<!-- VIDEO MESSAGE -->
+
+<div
+id="videoMessage"
+class="card hidden">
+
+<h3 style="margin-top:0">
+Video
+</h3>
+
+<div class="note">
+
+AI Horde's current public generation system supports
+images, image editing and text, but not general
+image-to-video generation.
+
+<br><br>
+
+We'll keep this tab ready so another free video
+backend can be added later without changing the
+image generator.
+
+</div>
+
+</div>
+
+
+
+<!-- ERROR -->
 
 <div id="error"></div>
 
-<button id="generateBtn" class="btn">
+
+
+<!-- GENERATE -->
+
+<button
+id="generateBtn"
+class="btn">
 Generate Image
 </button>
+
 
 
 <!-- STATUS -->
 
 <div id="statusPanel">
 
- <div class="statusTop">
+<div class="statusTop">
 
-  <div id="spinner" class="spinner"></div>
+<div
+id="spinner"
+class="spinner">
+</div>
 
-  <div>
-   <div id="statusTitle">Preparing</div>
-   <div id="statusMessage">Starting...</div>
-  </div>
+<div>
 
- </div>
+<div id="statusTitle">
+Submitting
+</div>
 
- <div class="progressOuter">
-  <div id="progressBar"></div>
- </div>
-
- <div class="stats">
-
-  <div class="stat">
-   <small>Queue</small>
-   <b id="queue">—</b>
-  </div>
-
-  <div class="stat">
-   <small>ETA</small>
-   <b id="eta">—</b>
-  </div>
-
-  <div class="stat">
-   <small>Elapsed</small>
-   <b id="elapsed">0s</b>
-  </div>
-
- </div>
+<div id="statusMessage">
+Sending request to AI Horde...
+</div>
 
 </div>
+
+</div>
+
+
+<div class="progress">
+
+<div
+class="progressBar">
+</div>
+
+</div>
+
+
+<div class="stats">
+
+<div class="stat">
+
+<div class="statLabel">
+Queue
+</div>
+
+<div
+id="queueValue"
+class="statValue">
+—
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="statLabel">
+Wait
+</div>
+
+<div
+id="waitValue"
+class="statValue">
+—
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="statLabel">
+Elapsed
+</div>
+
+<div
+id="elapsedValue"
+class="statValue">
+0s
+</div>
+
+</div>
+
+</div>
+
+</div>
+
 
 
 <!-- RESULT -->
 
-<div id="result" class="card">
+<div
+id="result"
+class="card">
 
- <label>Result</label>
+<label>
+Result
+</label>
 
- <div id="resultMedia"></div>
+<img
+id="resultImage">
 
- <div id="backendStatus"></div>
+<div
+id="resultInfo"
+class="small"
+style="margin-top:10px;">
+</div>
+
+<div class="resultButtons">
+
+<a
+id="openImage"
+class="secondary"
+target="_blank">
+Open full image
+</a>
+
+<button
+id="newGeneration"
+class="secondary">
+Create another
+</button>
 
 </div>
 
 </div>
 
 
-<script type="module">
-
-import {
- Client,
- handle_file
-}
-from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
+</div>
 
 
-/* NEW VIDEO SPACE */
 
-const VIDEO_SPACE =
-"SarahCole2008/wan2-2-fp8da-aoti-preview-2c-pullout";
+<script>
 
 
-let mode = "create";
+/* ============================================ */
+/* AI HORDE CONFIG */
+/* ============================================ */
 
-let files = [];
-let imageData = [];
+const HORDE_BASE =
+"https://aihorde.net/api/v2";
 
-let videoClient = null;
+const ANONYMOUS_KEY =
+"0000000000";
 
-let startTime = 0;
-let timer = null;
+const CLIENT_AGENT =
+"ALF-AI:1.0:github-pages";
 
 
+let mode =
+"create";
+
+let sourceFile =
+null;
+
+let requestId =
+null;
+
+let pollTimer =
+null;
+
+let elapsedTimer =
+null;
+
+let generationStart =
+null;
+
+
+
+/* ============================================ */
 /* ELEMENTS */
+/* ============================================ */
 
-const $ = id => document.getElementById(id);
-
-const uploadCard = $("uploadCard");
-const uploadHelp = $("uploadHelp");
-const uploadTitle = $("uploadTitle");
-
-const fileInput = $("fileInput");
-const previews = $("previews");
-
-const prompt = $("prompt");
-const promptTitle = $("promptTitle");
-
-const negativeCard = $("negativeCard");
-const negativePrompt = $("negativePrompt");
-
-const imageSettings = $("imageSettings");
-const editSettings = $("editSettings");
-const videoSettings = $("videoSettings");
-
-const generateBtn = $("generateBtn");
-
-const statusPanel = $("statusPanel");
-const statusTitle = $("statusTitle");
-const statusMessage = $("statusMessage");
-
-const queueDisplay = $("queue");
-const etaDisplay = $("eta");
-const elapsedDisplay = $("elapsed");
-
-const spinner = $("spinner");
-
-const errorBox = $("error");
-
-const result = $("result");
-const resultMedia = $("resultMedia");
-const backendStatus = $("backendStatus");
+const $ =
+id =>
+document.getElementById(id);
 
 
-/* LOGIN */
+const tabs =
+document.querySelectorAll(".tab");
 
-async function updateLogin(){
+const apiCard =
+$("apiCard");
 
- try{
+const apiKey =
+$("apiKey");
 
-  if(
-   window.puter &&
-   await puter.auth.isSignedIn()
-  ){
+const saveKey =
+$("saveKey");
 
-   const user =
-   await puter.auth.getUser();
+const uploadCard =
+$("uploadCard");
 
-   $("loginBtn").textContent =
-   "Signed in as " +
-   (user.username || "Puter user");
+const fileInput =
+$("fileInput");
 
-  }else{
+const preview =
+$("preview");
 
-   $("loginBtn").textContent =
-   "Sign in to Puter";
+const promptCard =
+$("promptCard");
 
-  }
+const promptTitle =
+$("promptTitle");
 
- }catch{}
+const prompt =
+$("prompt");
+
+const negativeCard =
+$("negativeCard");
+
+const negativePrompt =
+$("negativePrompt");
+
+const settingsCard =
+$("settingsCard");
+
+const model =
+$("model");
+
+const modelInfo =
+$("modelInfo");
+
+const size =
+$("size");
+
+const steps =
+$("steps");
+
+const cfg =
+$("cfg");
+
+const sampler =
+$("sampler");
+
+const editStrengthBox =
+$("editStrengthBox");
+
+const editStrength =
+$("editStrength");
+
+const videoMessage =
+$("videoMessage");
+
+const generateBtn =
+$("generateBtn");
+
+const errorBox =
+$("error");
+
+const statusPanel =
+$("statusPanel");
+
+const spinner =
+$("spinner");
+
+const statusTitle =
+$("statusTitle");
+
+const statusMessage =
+$("statusMessage");
+
+const queueValue =
+$("queueValue");
+
+const waitValue =
+$("waitValue");
+
+const elapsedValue =
+$("elapsedValue");
+
+const result =
+$("result");
+
+const resultImage =
+$("resultImage");
+
+const resultInfo =
+$("resultInfo");
+
+const openImage =
+$("openImage");
+
+const newGeneration =
+$("newGeneration");
+
+
+
+/* ============================================ */
+/* API KEY */
+/* ============================================ */
+
+const storedKey =
+localStorage.getItem(
+"alf_ai_horde_key"
+);
+
+if(storedKey){
+
+apiKey.value =
+storedKey;
 
 }
 
-$("loginBtn").onclick = async()=>{
 
- try{
+saveKey.onclick =
+()=>{
 
-  await puter.auth.signIn();
+const key =
+apiKey.value.trim();
 
-  updateLogin();
+if(key){
 
- }catch(e){
+localStorage.setItem(
+"alf_ai_horde_key",
+key
+);
 
-  showError(
-   e?.message ||
-   "Puter sign-in failed."
-  );
+saveKey.textContent =
+"Saved ✓";
 
- }
+}else{
+
+localStorage.removeItem(
+"alf_ai_horde_key"
+);
+
+saveKey.textContent =
+"Anonymous ✓";
+
+}
+
+setTimeout(()=>{
+
+saveKey.textContent =
+"Save";
+
+},1600);
 
 };
 
-updateLogin();
+
+function getApiKey(){
+
+const key =
+apiKey.value.trim();
+
+return key ||
+ANONYMOUS_KEY;
+
+}
 
 
-/* TABS */
 
-document.querySelectorAll(".tab").forEach(tab=>{
+/* ============================================ */
+/* ERROR HANDLING */
+/* ============================================ */
 
- tab.onclick=()=>{
+function showError(message){
 
-  document.querySelectorAll(".tab")
-  .forEach(t=>t.classList.remove("active"));
+errorBox.textContent =
+message;
 
-  tab.classList.add("active");
+errorBox.style.display =
+"block";
 
-  mode = tab.dataset.mode;
-
-  hideResult();
-  clearError();
-
-
-  if(mode==="create"){
-
-   uploadCard.classList.add("hidden");
-
-   imageSettings.classList.remove("hidden");
-   editSettings.classList.add("hidden");
-   videoSettings.classList.add("hidden");
-
-   negativeCard.classList.remove("hidden");
-
-   promptTitle.textContent =
-   "Describe the image";
-
-   generateBtn.textContent =
-   "Generate Image";
-
-  }
+}
 
 
-  if(mode==="edit"){
+function clearError(){
 
-   uploadCard.classList.remove("hidden");
+errorBox.style.display =
+"none";
 
-   uploadTitle.textContent =
-   "Image to edit";
+errorBox.textContent =
+"";
 
-   uploadHelp.textContent =
-   "Upload the image you want changed.";
-
-   imageSettings.classList.remove("hidden");
-   editSettings.classList.remove("hidden");
-   videoSettings.classList.add("hidden");
-
-   negativeCard.classList.remove("hidden");
-
-   promptTitle.textContent =
-   "What should I change?";
-
-   generateBtn.textContent =
-   "Edit Image";
-
-  }
+}
 
 
-  if(mode==="video"){
 
-   uploadCard.classList.remove("hidden");
+/* ============================================ */
+/* MODE TABS */
+/* ============================================ */
 
-   uploadTitle.textContent =
-   "Video images";
+tabs.forEach(tab=>{
 
-   uploadHelp.textContent =
-   "Upload one starting image. You can optionally upload a second image to use as the final frame.";
+tab.onclick =
+()=>{
 
-   imageSettings.classList.add("hidden");
-   editSettings.classList.add("hidden");
-   videoSettings.classList.remove("hidden");
+tabs.forEach(t=>
+t.classList.remove(
+"active"
+)
+);
 
-   negativeCard.classList.remove("hidden");
+tab.classList.add(
+"active"
+);
 
-   promptTitle.textContent =
-   "Describe the motion";
+mode =
+tab.dataset.mode;
 
-   generateBtn.textContent =
-   "Generate Video";
+clearError();
 
-  }
+result.style.display =
+"none";
 
- };
+statusPanel.style.display =
+"none";
+
+
+if(mode==="create"){
+
+apiCard.classList.remove(
+"hidden"
+);
+
+uploadCard.classList.add(
+"hidden"
+);
+
+promptCard.classList.remove(
+"hidden"
+);
+
+negativeCard.classList.remove(
+"hidden"
+);
+
+settingsCard.classList.remove(
+"hidden"
+);
+
+editStrengthBox.classList.add(
+"hidden"
+);
+
+videoMessage.classList.add(
+"hidden"
+);
+
+promptTitle.textContent =
+"Describe the image";
+
+prompt.placeholder =
+"Ultra realistic photograph of...";
+
+generateBtn.classList.remove(
+"hidden"
+);
+
+generateBtn.textContent =
+"Generate Image";
+
+}
+
+
+else if(mode==="edit"){
+
+apiCard.classList.remove(
+"hidden"
+);
+
+uploadCard.classList.remove(
+"hidden"
+);
+
+promptCard.classList.remove(
+"hidden"
+);
+
+negativeCard.classList.remove(
+"hidden"
+);
+
+settingsCard.classList.remove(
+"hidden"
+);
+
+editStrengthBox.classList.remove(
+"hidden"
+);
+
+videoMessage.classList.add(
+"hidden"
+);
+
+promptTitle.textContent =
+"What should change?";
+
+prompt.placeholder =
+"Change the shirt to black while keeping the same person, pose, lighting and background...";
+
+generateBtn.classList.remove(
+"hidden"
+);
+
+generateBtn.textContent =
+"Edit Image";
+
+}
+
+
+else if(mode==="video"){
+
+apiCard.classList.add(
+"hidden"
+);
+
+uploadCard.classList.add(
+"hidden"
+);
+
+promptCard.classList.add(
+"hidden"
+);
+
+negativeCard.classList.add(
+"hidden"
+);
+
+settingsCard.classList.add(
+"hidden"
+);
+
+videoMessage.classList.remove(
+"hidden"
+);
+
+generateBtn.classList.add(
+"hidden"
+);
+
+}
+
+};
 
 });
 
 
+
+/* ============================================ */
 /* FILE UPLOAD */
+/* ============================================ */
 
-function dataURL(file){
+fileInput.onchange =
+()=>{
 
- return new Promise((resolve,reject)=>{
+sourceFile =
+fileInput.files[0] ||
+null;
 
-  const reader =
-  new FileReader();
+if(!sourceFile){
 
-  reader.onload =
-  ()=>resolve(reader.result);
+preview.style.display =
+"none";
 
-  reader.onerror =
-  reject;
-
-  reader.readAsDataURL(file);
-
- });
+return;
 
 }
 
+const url =
+URL.createObjectURL(
+sourceFile
+);
 
-fileInput.onchange = async()=>{
+preview.src =
+url;
 
- files = [];
- imageData = [];
-
- previews.innerHTML = "";
-
-
- const limit =
- mode==="video" ? 2 : 3;
-
-
- const selected =
- [...fileInput.files].slice(0,limit);
-
-
- for(const file of selected){
-
-  files.push(file);
-
-  const data =
-  await dataURL(file);
-
-  imageData.push(data);
-
-
-  const img =
-  document.createElement("img");
-
-  img.src = data;
-
-  previews.appendChild(img);
-
- }
+preview.style.display =
+"block";
 
 };
 
 
-/* UI HELPERS */
 
-function showError(text){
+/* ============================================ */
+/* LOAD ACTIVE HORDE MODELS */
+/* ============================================ */
 
- errorBox.textContent = text;
- errorBox.style.display = "block";
+async function loadModels(){
 
-}
+try{
 
-function clearError(){
+model.innerHTML =
+`<option>Loading models...</option>`;
 
- errorBox.style.display = "none";
- errorBox.textContent = "";
 
-}
+const response =
+await fetch(
+`${HORDE_BASE}/status/models?type=image`
+);
 
-function hideResult(){
 
- result.style.display = "none";
- statusPanel.style.display = "none";
+if(!response.ok){
 
-}
-
-function readableSeconds(value){
-
- const s =
- Math.max(
- 0,
- Math.round(Number(value))
- );
-
- if(Number.isNaN(s))
- return "—";
-
- if(s<60)
- return s+"s";
-
- return (
-  Math.floor(s/60) +
-  "m " +
-  (s%60) +
-  "s"
- );
+throw new Error(
+"Unable to read AI Horde models."
+);
 
 }
 
 
-/* TIMER */
+const data =
+await response.json();
 
-function startTimer(){
 
- startTime = Date.now();
+if(!Array.isArray(data)){
 
- clearInterval(timer);
-
- elapsedDisplay.textContent = "0s";
-
- timer=setInterval(()=>{
-
-  elapsedDisplay.textContent =
-  readableSeconds(
-   (Date.now()-startTime)/1000
-  );
-
- },1000);
-
-}
-
-function stopTimer(){
-
- clearInterval(timer);
+throw new Error(
+"Unexpected model response."
+);
 
 }
 
 
-/* STATUS */
+const available =
+data
+.filter(m=>
+m &&
+m.name &&
+Number(m.count || 0) > 0
+)
+.sort(
+(a,b)=>
+Number(b.count || 0) -
+Number(a.count || 0)
+);
 
-function startStatus(){
 
- statusPanel.style.display =
- "block";
+model.innerHTML =
+"";
 
- spinner.style.display =
- "block";
 
- statusTitle.textContent =
- "Preparing";
+if(!available.length){
 
- statusMessage.textContent =
- "Starting your request...";
-
- queueDisplay.textContent =
- "—";
-
- etaDisplay.textContent =
- "—";
-
- startTimer();
-
-}
-
-function completeStatus(){
-
- spinner.style.display =
- "none";
-
- statusTitle.textContent =
- "Complete";
-
- statusMessage.textContent =
- "Generation finished.";
-
- queueDisplay.textContent =
- "Done";
-
- etaDisplay.textContent =
- "0s";
-
- stopTimer();
+throw new Error(
+"No active image workers found."
+);
 
 }
 
 
-/* IMAGE PROMPTS */
+available.forEach(
+(item,index)=>{
 
-function realismPrompt(){
+const option =
+document.createElement(
+"option"
+);
 
- switch($("realism").value){
+option.value =
+item.name;
 
-  case "iphone":
-  return "ultra realistic iPhone photograph, natural lighting, realistic skin texture, believable real-world detail";
+option.textContent =
+`${item.name} — ${item.count || 0} worker${item.count===1 ? "" : "s"}`;
 
-  case "dslr":
-  return "ultra realistic DSLR photograph, natural skin detail, accurate anatomy, professional photography";
 
-  case "cinematic":
-  return "photorealistic cinematic photograph, realistic film lighting, highly believable textures and anatomy";
+if(index===0){
 
-  default:
-  return "ultra realistic natural photograph, true-to-life skin, believable lighting and accurate anatomy";
+option.selected =
+true;
 
- }
+}
+
+model.appendChild(
+option
+);
+
+});
+
+
+updateModelInfo(
+available
+);
+
+
+model.onchange =
+()=>updateModelInfo(
+available
+);
+
+
+}catch(e){
+
+console.error(e);
+
+model.innerHTML =
+`<option value="Deliberate">Deliberate</option>`;
+
+modelInfo.textContent =
+"Could not load the live model list. Using fallback model.";
+
+}
 
 }
 
 
-function buildEditPrompt(text){
 
- let preserve=[];
+function updateModelInfo(
+available
+){
 
- if($("preserveIdentity").checked)
- preserve.push("same identity");
+const selected =
+available.find(
+x=>x.name===model.value
+);
 
- if($("preserveBackground").checked)
- preserve.push("same background");
+if(!selected){
 
- if($("preservePose").checked)
- preserve.push("same pose and framing");
+return;
 
- if($("preserveLighting").checked)
- preserve.push("same lighting");
+}
 
-
- return `
- ${realismPrompt()}.
-
- Edit the supplied image.
-
- Requested change:
- ${text}
-
- Edit precision:
- ${$("editPrecision").value}.
-
- Edit strength:
- ${$("editStrength").value}.
-
- Preserve:
- ${preserve.join(", ")}.
-
- Keep the result photographically realistic.
- `;
+modelInfo.textContent =
+`${selected.count || 0} active workers • queue ${selected.queued || 0} • ETA ${formatSeconds(selected.eta)}`;
 
 }
 
 
-/* RESULT */
 
-function getURL(value){
+loadModels();
 
- if(!value)
- return null;
 
- if(typeof value==="string")
- return value;
 
- if(value.url)
- return value.url;
+/* ============================================ */
+/* IMAGE → BASE64 */
+/* ============================================ */
 
- if(value.path &&
- String(value.path).startsWith("http"))
- return value.path;
+function imageFileToBase64(
+file,
+width,
+height
+){
 
- if(value.name &&
- String(value.name).startsWith("http"))
- return value.name;
+return new Promise(
+(resolve,reject)=>{
 
- return null;
+const reader =
+new FileReader();
 
-}
 
+reader.onload =
+()=>{
 
-function showImage(value){
+const img =
+new Image();
 
- resultMedia.innerHTML="";
 
- if(value instanceof HTMLElement){
+img.onload =
+()=>{
 
-  resultMedia.appendChild(value);
+const canvas =
+document.createElement(
+"canvas"
+);
 
- }else{
+canvas.width =
+width;
 
-  const img =
-  document.createElement("img");
+canvas.height =
+height;
 
-  img.src=value;
 
-  resultMedia.appendChild(img);
+const ctx =
+canvas.getContext(
+"2d"
+);
 
- }
 
- result.style.display="block";
+/*
+Cover / centre crop so the source image
+matches the requested AI dimensions.
+*/
 
- result.scrollIntoView({
-  behavior:"smooth"
- });
+const scale =
+Math.max(
+width / img.width,
+height / img.height
+);
 
-}
+const drawWidth =
+img.width * scale;
 
+const drawHeight =
+img.height * scale;
 
-function showVideo(url){
+const x =
+(width - drawWidth) / 2;
 
- resultMedia.innerHTML="";
+const y =
+(height - drawHeight) / 2;
 
- const video =
- document.createElement("video");
 
- video.src=url;
- video.controls=true;
- video.playsInline=true;
- video.autoplay=false;
+ctx.drawImage(
+img,
+x,
+y,
+drawWidth,
+drawHeight
+);
 
- resultMedia.appendChild(video);
 
- result.style.display="block";
+const data =
+canvas.toDataURL(
+"image/webp",
+0.90
+);
 
- result.scrollIntoView({
-  behavior:"smooth"
- });
 
-}
-
-
-/* VIDEO CONNECTION */
-
-async function connectVideo(){
-
- if(videoClient)
- return videoClient;
-
-
- statusTitle.textContent =
- "Connecting";
-
- statusMessage.textContent =
- "Connecting to SarahCole2008 Wan 2.2...";
-
-
- videoClient =
- await Client.connect(
-  VIDEO_SPACE,
-  {
-   events:["data","status"],
-
-   status_callback:s=>{
-
-    if(!s) return;
-
-    if(s.status==="sleeping"){
-
-     statusTitle.textContent =
-     "Waking AI";
-
-     statusMessage.textContent =
-     "The Space is waking up...";
-
-    }
-
-    if(s.status==="running"){
-
-     statusTitle.textContent =
-     "Connected";
-
-     statusMessage.textContent =
-     "Video engine ready.";
-
-    }
-
-   }
-
-  }
- );
-
-
- return videoClient;
-
-}
-
-
-/* LIVE VIDEO JOB */
-
-async function runVideo(client,payload){
-
- const job =
- client.submit(
-  "/generate_video",
-  payload
- );
-
-
- let finalData=null;
-
-
- for await(const event of job){
-
-  console.log(
-   "VIDEO EVENT",
-   event
-  );
-
-
-  if(event.type==="status"){
-
-   if(event.stage==="pending"){
-
-    statusTitle.textContent =
-    "Queued";
-
-    statusMessage.textContent =
-    "Waiting for an xlarge video GPU slot...";
-
-    if(
-     typeof event.position
-     ==="number"
-    )
-    queueDisplay.textContent =
-    event.position;
-
-    else
-    queueDisplay.textContent =
-    "Waiting";
-
-
-    if(
-     typeof event.eta
-     ==="number"
-    )
-    etaDisplay.textContent =
-    readableSeconds(event.eta);
-
-   }
-
-
-   else if(
-    event.stage==="generating"
-   ){
-
-    statusTitle.textContent =
-    "Generating";
-
-    statusMessage.textContent =
-    "Wan 2.2 is creating your video...";
-
-    queueDisplay.textContent =
-    "Processing";
-
-
-    if(
-     typeof event.eta
-     ==="number"
-    )
-    etaDisplay.textContent =
-    readableSeconds(event.eta);
-
-
-    if(
-     event.progress_data?.[0]?.desc
-    )
-    statusMessage.textContent =
-    event.progress_data[0].desc;
-
-   }
-
-
-   else if(
-    event.stage==="complete"
-   ){
-
-    statusTitle.textContent =
-    "Finishing";
-
-    statusMessage.textContent =
-    "Loading generated video...";
-
-   }
-
-
-   else if(
-    event.stage==="error"
-   ){
-
-    throw new Error(
-     event.message ||
-     "The video backend reported an error."
-    );
-
-   }
-
-  }
-
-
-  if(event.type==="data"){
-
-   finalData =
-   event.data;
-
-  }
-
- }
-
-
- if(!finalData){
-
-  throw new Error(
-   "The Space completed without returning video data."
-  );
-
- }
-
-
- return finalData;
-
-}
-
-
-/* GENERATE */
-
-generateBtn.onclick = async()=>{
-
- clearError();
-
- result.style.display="none";
- backendStatus.textContent="";
-
-
- const text =
- prompt.value.trim();
-
-
- if(!text){
-
-  showError(
-   "Enter a prompt first."
-  );
-
-  return;
-
- }
-
-
- if(
-  mode==="edit" &&
-  imageData.length===0
- ){
-
-  showError(
-   "Upload an image first."
-  );
-
-  return;
-
- }
-
-
- if(
-  mode==="video" &&
-  files.length===0
- ){
-
-  showError(
-   "Upload a starting image first."
-  );
-
-  return;
-
- }
-
-
- generateBtn.disabled=true;
-
- startStatus();
-
-
- try{
-
-
-  /* CREATE IMAGE */
-
-  if(mode==="create"){
-
-   statusTitle.textContent =
-   "Generating";
-
-   statusMessage.textContent =
-   "Creating image...";
-
-
-   const options={
-
-    model:
-    $("imageModel").value,
-
-    quality:
-    $("imageQuality").value,
-
-    size:
-    $("imageSize").value
-
-   };
-
-
-   if(negativePrompt.value.trim())
-   options.negative_prompt =
-   negativePrompt.value.trim();
-
-
-   const image =
-   await puter.ai.txt2img(
-
-    realismPrompt() +
-    ". " +
-    text,
-
-    options
-
-   );
-
-
-   completeStatus();
-
-   showImage(image);
-
-  }
-
-
-  /* EDIT IMAGE */
-
-  else if(mode==="edit"){
-
-   statusTitle.textContent =
-   "Editing";
-
-   statusMessage.textContent =
-   "Editing image...";
-
-
-   const options={
-
-    model:
-    $("imageModel").value,
-
-    quality:
-    $("imageQuality").value,
-
-    size:
-    $("imageSize").value,
-
-    input_images:
-    imageData
-
-   };
-
-
-   if(negativePrompt.value.trim())
-   options.negative_prompt =
-   negativePrompt.value.trim();
-
-
-   const image =
-   await puter.ai.txt2img(
-
-    buildEditPrompt(text),
-
-    options
-
-   );
-
-
-   completeStatus();
-
-   showImage(image);
-
-  }
-
-
-  /* VIDEO */
-
-  else if(mode==="video"){
-
-   const client =
-   await connectVideo();
-
-
-   statusTitle.textContent =
-   "Submitting";
-
-   statusMessage.textContent =
-   "Sending video request...";
-
-
-   const firstImage =
-   handle_file(files[0]);
-
-
-   const lastImage =
-   files[1]
-   ? handle_file(files[1])
-   : null;
-
-
-   const negative =
-   negativePrompt.value.trim() ||
-   "blurry, static, distorted anatomy, low quality, artifacts, malformed hands, malformed face";
-
-
-   /*
-   API order for SarahCole2008 Space:
-
-   1 input image
-   2 last image
-   3 prompt
-   4 steps
-   5 negative prompt
-   6 duration
-   7 guidance
-   8 guidance 2
-   9 seed
-   10 randomize seed
-   11 quality
-   12 scheduler
-   13 flow shift
-   14 FPS multiplier
-   15 busy protection / safe mode
-   16 display result
-   */
-
-
-   const data =
-   await runVideo(
-    client,
-    [
-     firstImage,
-     lastImage,
-     text,
-     Number($("steps").value),
-     negative,
-     Number($("duration").value),
-     Number($("guidance").value),
-     Number($("guidance2").value),
-     42,
-     true,
-     Number($("quality").value),
-     "UniPCMultistep",
-     3.0,
-     Number($("fps").value),
-     $("busyProtection").checked,
-     true
-    ]
-   );
-
-
-   /*
-   Returns:
-
-   0 = video player file
-   1 = download file
-   2 = seed
-   */
-
-
-   const videoURL =
-   getURL(data[0]) ||
-   getURL(data[1]);
-
-
-   if(!videoURL){
-
-    throw new Error(
-     "Generation finished but no playable video was returned."
-    );
-
-   }
-
-
-   completeStatus();
-
-   showVideo(videoURL);
-
-
-   backendStatus.textContent =
-   "Seed: " +
-   data[2];
-
-  }
-
-
- }catch(e){
-
-  console.error(e);
-
-  stopTimer();
-
-  spinner.style.display="none";
-
-  statusTitle.textContent =
-  "Failed";
-
-  statusMessage.textContent =
-  e?.message ||
-  "Generation failed.";
-
-  showError(
-   e?.message ||
-   "Generation failed."
-  );
-
- }
-
-
- finally{
-
-  generateBtn.disabled=false;
-
- }
+resolve(
+data.split(",")[1]
+);
 
 };
+
+
+img.onerror =
+reject;
+
+img.src =
+reader.result;
+
+};
+
+
+reader.onerror =
+reject;
+
+reader.readAsDataURL(
+file
+);
+
+});
+
+}
+
+
+
+/* ============================================ */
+/* STATUS TIMER */
+/* ============================================ */
+
+function startElapsed(){
+
+generationStart =
+Date.now();
+
+
+clearInterval(
+elapsedTimer
+);
+
+
+elapsedTimer =
+setInterval(()=>{
+
+const seconds =
+Math.round(
+(Date.now() -
+generationStart) /
+1000
+);
+
+elapsedValue.textContent =
+formatSeconds(
+seconds
+);
+
+},1000);
+
+}
+
+
+function stopElapsed(){
+
+clearInterval(
+elapsedTimer
+);
+
+}
+
+
+function formatSeconds(value){
+
+if(
+value===undefined ||
+value===null ||
+Number.isNaN(
+Number(value)
+)
+){
+
+return "—";
+
+}
+
+const total =
+Math.max(
+0,
+Math.round(
+Number(value)
+)
+);
+
+
+if(total<60){
+
+return `${total}s`;
+
+}
+
+
+const minutes =
+Math.floor(
+total/60
+);
+
+const seconds =
+total%60;
+
+
+return seconds
+?
+`${minutes}m ${seconds}s`
+:
+`${minutes}m`;
+
+}
+
+
+
+/* ============================================ */
+/* SUBMIT GENERATION */
+/* ============================================ */
+
+async function submitGeneration(){
+
+clearError();
+
+result.style.display =
+"none";
+
+
+const text =
+prompt.value.trim();
+
+
+if(!text){
+
+showError(
+"Enter a prompt first."
+);
+
+return;
+
+}
+
+
+if(
+mode==="edit" &&
+!sourceFile
+){
+
+showError(
+"Upload the image you want to edit first."
+);
+
+return;
+
+}
+
+
+const selectedModel =
+model.value;
+
+
+if(!selectedModel){
+
+showError(
+"Wait for the model list to finish loading."
+);
+
+return;
+
+}
+
+
+generateBtn.disabled =
+true;
+
+
+statusPanel.style.display =
+"block";
+
+spinner.style.display =
+"block";
+
+statusTitle.textContent =
+"Preparing";
+
+statusMessage.textContent =
+"Preparing your AI Horde request...";
+
+queueValue.textContent =
+"—";
+
+waitValue.textContent =
+"—";
+
+elapsedValue.textContent =
+"0s";
+
+
+startElapsed();
+
+
+try{
+
+
+const [
+width,
+height
+] =
+size.value
+.split("x")
+.map(Number);
+
+
+const negative =
+negativePrompt.value.trim();
+
+
+const finalPrompt =
+negative
+?
+`${text} ### ${negative}`
+:
+text;
+
+
+const params = {
+
+width,
+height,
+
+steps:
+Number(
+steps.value
+),
+
+cfg_scale:
+Number(
+cfg.value
+),
+
+sampler_name:
+sampler.value,
+
+karras:true,
+
+n:1
+
+};
+
+
+const payload = {
+
+prompt:
+finalPrompt,
+
+params,
+
+models:[
+selectedModel
+]
+
+};
+
+
+/* IMAGE EDITING */
+
+if(mode==="edit"){
+
+statusMessage.textContent =
+"Processing your reference image...";
+
+
+payload.source_image =
+await imageFileToBase64(
+sourceFile,
+width,
+height
+);
+
+
+payload.source_processing =
+"img2img";
+
+
+payload.params.denoising_strength =
+Number(
+editStrength.value
+);
+
+}
+
+
+statusTitle.textContent =
+"Submitting";
+
+statusMessage.textContent =
+"Sending request to community GPU workers...";
+
+
+const response =
+await fetch(
+`${HORDE_BASE}/generate/async`,
+{
+
+method:"POST",
+
+headers:{
+
+"Content-Type":
+"application/json",
+
+"apikey":
+getApiKey(),
+
+"Client-Agent":
+CLIENT_AGENT
+
+},
+
+body:
+JSON.stringify(
+payload
+)
+
+}
+);
+
+
+const data =
+await response.json();
+
+
+if(!response.ok){
+
+throw new Error(
+data.message ||
+data.error ||
+JSON.stringify(data)
+);
+
+}
+
+
+if(!data.id){
+
+throw new Error(
+"AI Horde accepted the connection but did not return a request ID."
+);
+
+}
+
+
+requestId =
+data.id;
+
+
+statusTitle.textContent =
+"Queued";
+
+statusMessage.textContent =
+"Waiting for a volunteer GPU worker...";
+
+
+await pollGeneration();
+
+
+}catch(e){
+
+console.error(e);
+
+stopElapsed();
+
+spinner.style.display =
+"none";
+
+statusTitle.textContent =
+"Failed";
+
+statusMessage.textContent =
+e.message ||
+"Generation failed.";
+
+showError(
+e.message ||
+"AI Horde generation failed."
+);
+
+generateBtn.disabled =
+false;
+
+}
+
+}
+
+
+
+/* ============================================ */
+/* POLL GENERATION */
+/* ============================================ */
+
+async function pollGeneration(){
+
+let attempts =
+0;
+
+
+while(requestId){
+
+attempts++;
+
+
+const response =
+await fetch(
+`${HORDE_BASE}/generate/check/${requestId}`
+);
+
+
+const state =
+await response.json();
+
+
+if(!response.ok){
+
+throw new Error(
+state.message ||
+"Unable to check generation."
+);
+
+}
+
+
+if(
+state.faulted
+){
+
+throw new Error(
+"The AI Horde request faulted before completion."
+);
+
+}
+
+
+if(
+state.is_possible === false
+){
+
+throw new Error(
+"No compatible worker is currently available for this request. Try another model."
+);
+
+}
+
+
+queueValue.textContent =
+state.queue_position ??
+state.waiting ??
+"—";
+
+
+waitValue.textContent =
+formatSeconds(
+state.wait_time
+);
+
+
+if(
+Number(state.processing || 0) > 0
+){
+
+statusTitle.textContent =
+"Generating";
+
+statusMessage.textContent =
+"A volunteer GPU is creating your image...";
+
+queueValue.textContent =
+"Processing";
+
+}
+
+
+else{
+
+statusTitle.textContent =
+"Queued";
+
+statusMessage.textContent =
+"Waiting for a volunteer GPU worker...";
+
+}
+
+
+if(state.done){
+
+await retrieveResult();
+
+return;
+
+}
+
+
+/*
+AI Horde has a short status cache,
+so there is no reason to hammer the API.
+*/
+
+await new Promise(
+resolve=>
+setTimeout(
+resolve,
+2000
+)
+);
+
+
+if(attempts>900){
+
+throw new Error(
+"Generation timed out after 30 minutes."
+);
+
+}
+
+}
+
+}
+
+
+
+/* ============================================ */
+/* RETRIEVE RESULT */
+/* ============================================ */
+
+async function retrieveResult(){
+
+statusTitle.textContent =
+"Finishing";
+
+statusMessage.textContent =
+"Downloading your generated image...";
+
+
+const response =
+await fetch(
+`${HORDE_BASE}/generate/status/${requestId}`
+);
+
+
+const data =
+await response.json();
+
+
+if(!response.ok){
+
+throw new Error(
+data.message ||
+"Unable to retrieve result."
+);
+
+}
+
+
+if(
+!data.generations ||
+!data.generations.length
+){
+
+throw new Error(
+"Generation completed but no image was returned."
+);
+
+}
+
+
+const generation =
+data.generations[0];
+
+
+let image =
+generation.img;
+
+
+if(!image){
+
+throw new Error(
+"The worker returned no image."
+);
+
+}
+
+
+/*
+Normally AI Horde returns an image URL.
+Handle base64 as a fallback too.
+*/
+
+if(
+!image.startsWith("http") &&
+!image.startsWith("data:")
+){
+
+image =
+`data:image/webp;base64,${image}`;
+
+}
+
+
+resultImage.src =
+image;
+
+openImage.href =
+image;
+
+
+resultInfo.textContent =
+[
+generation.model
+? `Model: ${generation.model}`
+: "",
+
+generation.seed
+? `Seed: ${generation.seed}`
+: "",
+
+generation.worker_name
+? `Worker: ${generation.worker_name}`
+: ""
+
+]
+.filter(Boolean)
+.join(" • ");
+
+
+result.style.display =
+"block";
+
+
+spinner.style.display =
+"none";
+
+statusTitle.textContent =
+"Complete";
+
+statusMessage.textContent =
+"Your image is ready.";
+
+queueValue.textContent =
+"Done";
+
+waitValue.textContent =
+"0s";
+
+
+stopElapsed();
+
+
+generateBtn.disabled =
+false;
+
+requestId =
+null;
+
+
+result.scrollIntoView({
+behavior:"smooth"
+});
+
+}
+
+
+
+/* ============================================ */
+/* BUTTONS */
+/* ============================================ */
+
+generateBtn.onclick =
+submitGeneration;
+
+
+newGeneration.onclick =
+()=>{
+
+result.style.display =
+"none";
+
+prompt.focus();
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
+};
+
 
 </script>
 
 </body>
+
 </html>
