@@ -4,28 +4,35 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Alf AI</title>
+
   <script src="https://js.puter.com/v2/"></script>
+
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: #0b0b0f;
       color: white;
     }
+
     .wrap {
-      max-width: 820px;
+      max-width: 860px;
       margin: auto;
       padding: 20px 16px 60px;
     }
+
     h1 {
       margin: 8px 0 4px;
       font-size: 32px;
     }
+
     .sub {
       color: #aaa;
       margin-bottom: 24px;
     }
+
     .card {
       background: #17171c;
       border: 1px solid #2b2b33;
@@ -33,10 +40,12 @@
       padding: 16px;
       margin-bottom: 16px;
     }
+
     .tabs {
       display: flex;
       gap: 8px;
     }
+
     .tab {
       flex: 1;
       padding: 12px;
@@ -46,17 +55,20 @@
       color: #ddd;
       font-weight: 700;
     }
+
     .tab.active {
       background: white;
       color: black;
     }
+
     label {
       display: block;
       margin-bottom: 8px;
       font-weight: 700;
       font-size: 14px;
     }
-    textarea, select, input[type="text"] {
+
+    textarea, select, input[type="text"], input[type="number"] {
       width: 100%;
       border-radius: 12px;
       border: 1px solid #3a3a45;
@@ -65,29 +77,35 @@
       padding: 12px;
       font-size: 16px;
     }
+
     textarea {
       min-height: 120px;
       resize: vertical;
     }
+
     .hidden { display: none; }
+
     .upload {
       border: 1px dashed #555;
       border-radius: 14px;
       padding: 16px;
       text-align: center;
     }
+
     .previewGrid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
       margin-top: 12px;
     }
+
     .previewGrid img {
       width: 100%;
       aspect-ratio: 1;
       object-fit: cover;
       border-radius: 10px;
     }
+
     .btn {
       width: 100%;
       border: 0;
@@ -98,7 +116,11 @@
       background: white;
       color: black;
     }
-    .btn:disabled { opacity: 0.5; }
+
+    .btn:disabled {
+      opacity: 0.5;
+    }
+
     .secondary {
       width: 100%;
       border: 1px solid #3a3a45;
@@ -109,27 +131,26 @@
       font-weight: 700;
       margin-bottom: 16px;
     }
+
     .small {
       font-size: 13px;
       color: #aaa;
       line-height: 1.4;
     }
+
     .grid2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
     }
-    .grid3 {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 12px;
-    }
+
     #status {
       display: none;
       text-align: center;
       color: #ddd;
       padding: 18px;
     }
+
     .spinner {
       width: 28px;
       height: 28px;
@@ -139,7 +160,11 @@
       margin: 0 auto 10px;
       animation: spin .8s linear infinite;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     #error {
       display: none;
       background: #451010;
@@ -148,20 +173,26 @@
       padding: 12px;
       border-radius: 12px;
       margin-bottom: 16px;
+      white-space: pre-wrap;
     }
+
     #result {
       display: none;
     }
-    #result img, #result video {
+
+    #result img,
+    #result video {
       width: 100%;
       border-radius: 14px;
       display: block;
     }
+
     .checks {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
+
     .check {
       display: flex;
       align-items: center;
@@ -170,11 +201,14 @@
       border: 1px solid #30303a;
       border-radius: 12px;
       padding: 10px;
+      font-size: 14px;
     }
+
     .check input {
       width: auto;
       transform: scale(1.2);
     }
+
     .sectionTitle {
       font-size: 13px;
       color: #cfcfcf;
@@ -183,6 +217,7 @@
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
+
     .noteBox {
       background: #101015;
       border: 1px solid #2b2b33;
@@ -191,6 +226,12 @@
       font-size: 13px;
       color: #bdbdc8;
       line-height: 1.45;
+    }
+
+    .seedRow {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #bbb;
     }
   </style>
 </head>
@@ -212,13 +253,15 @@
     <div id="uploadCard" class="card hidden">
       <label>Reference image(s)</label>
       <div class="upload">
-        <div class="small">Upload up to 3 reference images</div>
+        <div class="small">
+          Upload up to 3 images.
+        </div>
         <input id="fileInput" type="file" accept="image/*" multiple />
         <div id="previews" class="previewGrid"></div>
       </div>
-      <div class="small" style="margin-top:10px;">
-        For edits, upload the image you want changed.  
-        For videos, the first uploaded image is treated as the main reference.
+
+      <div id="uploadHelp" class="small" style="margin-top:10px;">
+        For edits, upload the image you want changed.
       </div>
     </div>
 
@@ -229,7 +272,7 @@
 
     <div class="card">
       <label>Negative prompt (optional)</label>
-      <textarea id="negativePrompt" placeholder="blurry, warped face, extra fingers, low detail, unrealistic skin, bad anatomy..."></textarea>
+      <textarea id="negativePrompt" placeholder="blurry, low detail, warped face, bad anatomy, unrealistic skin, flicker..."></textarea>
       <div class="small" style="margin-top:8px;">
         Use this to tell the AI what to avoid.
       </div>
@@ -313,72 +356,83 @@
           <label class="check"><input type="checkbox" id="preserveExpression" checked> Expression</label>
         </div>
       </div>
-
-      <div class="noteBox" style="margin-top:14px;">
-        This helps the AI preserve the original look while only changing what you asked for.
-      </div>
     </div>
 
     <div id="videoSettings" class="card hidden">
-      <div class="sectionTitle">Video realism controls</div>
+      <div class="sectionTitle">Wan 2.2 video controls</div>
+
+      <div class="noteBox" style="margin-bottom:14px;">
+        In video mode:
+        <br>• 1st uploaded image = starting frame
+        <br>• 2nd uploaded image = optional ending frame
+        <br>• The video is generated using the public STCM Wan 2.2 Hugging Face Space
+      </div>
 
       <div class="grid2">
         <div>
-          <label>Video model</label>
-          <select id="videoModel">
-            <option value="veo-3.1-fast-generate-preview">Veo Fast</option>
-            <option value="veo-3.1-lite-generate-preview">Veo Lite</option>
-            <option value="sora-2">Sora 2</option>
-          </select>
-        </div>
-
-        <div>
-          <label>Length</label>
+          <label>Duration</label>
           <select id="videoSeconds">
-            <option value="4">4 seconds</option>
+            <option value="2">2 seconds</option>
+            <option value="3">3 seconds</option>
+            <option value="4" selected>4 seconds</option>
+            <option value="5">5 seconds</option>
             <option value="6">6 seconds</option>
             <option value="8">8 seconds</option>
           </select>
         </div>
 
         <div>
-          <label>Resolution</label>
-          <select id="videoResolution">
-            <option value="1280x720">720p</option>
-            <option value="1920x1080">1080p</option>
-            <option value="3840x2160">4K</option>
+          <label>Inference steps</label>
+          <select id="videoSteps">
+            <option value="4">4</option>
+            <option value="6" selected>6</option>
+            <option value="8">8</option>
+            <option value="10">10</option>
           </select>
         </div>
 
         <div>
-          <label>Realism style</label>
-          <select id="videoRealismPreset">
-            <option value="natural">Natural</option>
-            <option value="iphone">iPhone footage</option>
-            <option value="cinematic">Cinematic</option>
-            <option value="documentary">Documentary</option>
+          <label>Guidance scale</label>
+          <select id="videoGuidance">
+            <option value="1" selected>1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
           </select>
         </div>
 
         <div>
-          <label>Camera movement</label>
-          <select id="cameraMotion">
-            <option value="static">Static camera</option>
-            <option value="handheld">Handheld</option>
-            <option value="pushin">Slow push-in</option>
-            <option value="tracking">Tracking shot</option>
-            <option value="drone">Drone style</option>
+          <label>Guidance scale 2</label>
+          <select id="videoGuidance2">
+            <option value="1" selected>1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
           </select>
         </div>
 
         <div>
-          <label>Motion amount</label>
-          <select id="motionAmount">
-            <option value="subtle">Subtle</option>
-            <option value="normal">Normal</option>
-            <option value="dramatic">Dramatic</option>
+          <label>Video quality</label>
+          <select id="videoQuality">
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7" selected>7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
           </select>
         </div>
+
+        <div>
+          <label>Seed</label>
+          <input id="videoSeed" type="number" value="42" />
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <label class="check" style="display:flex;">
+          <input type="checkbox" id="videoRandomSeed" checked>
+          Randomise seed
+        </label>
       </div>
     </div>
 
@@ -389,18 +443,26 @@
     <div id="status">
       <div class="spinner"></div>
       <div id="statusText">Generating...</div>
-      <div class="small">Higher-quality video can take a while.</div>
+      <div class="small">Hugging Face ZeroGPU video can take a while if the Space is waking up or busy.</div>
     </div>
 
     <div id="result" class="card">
       <label>Result</label>
       <div id="resultMedia"></div>
+      <div id="seedInfo" class="seedRow"></div>
     </div>
   </div>
 
-  <script>
+  <script type="module">
+    import { Client, handle_file } from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
+
+    const puter = window.puter;
+    const WAN_SPACE = "STCM/wan2-2-fp8da-aoti-preview-2c-pullout";
+
     let mode = "create";
     let referenceImages = [];
+    let referenceFiles = [];
+    let wanClient = null;
 
     const tabs = document.querySelectorAll(".tab");
     const uploadCard = document.getElementById("uploadCard");
@@ -420,8 +482,15 @@
     const statusText = document.getElementById("statusText");
     const error = document.getElementById("error");
     const loginBtn = document.getElementById("loginBtn");
+    const uploadHelp = document.getElementById("uploadHelp");
+    const seedInfo = document.getElementById("seedInfo");
 
     async function updateLogin() {
+      if (!puter) {
+        loginBtn.textContent = "Puter not loaded";
+        return;
+      }
+
       try {
         if (await puter.auth.isSignedIn()) {
           const user = await puter.auth.getUser();
@@ -435,6 +504,11 @@
     updateLogin();
 
     loginBtn.onclick = async () => {
+      if (!puter) {
+        showError("Puter did not load.");
+        return;
+      }
+
       try {
         await puter.auth.signIn();
         updateLogin();
@@ -449,6 +523,7 @@
         tab.classList.add("active");
         mode = tab.dataset.mode;
         result.style.display = "none";
+        seedInfo.textContent = "";
 
         if (mode === "create") {
           uploadCard.classList.add("hidden");
@@ -468,6 +543,7 @@
           promptTitle.textContent = "What should I change?";
           prompt.placeholder = "Make the person's nose slightly bigger while keeping the same identity, lighting and background.";
           generateBtn.textContent = "Edit Image";
+          uploadHelp.textContent = "For edits, upload the image you want changed.";
         }
 
         if (mode === "video") {
@@ -478,6 +554,7 @@
           promptTitle.textContent = "Describe the video";
           prompt.placeholder = "Create a realistic cinematic video of this person slowly turning and blinking naturally.";
           generateBtn.textContent = "Generate Video";
+          uploadHelp.textContent = "For video, upload 1 image as the starting frame. Upload a 2nd image if you want an optional ending frame.";
         }
       };
     });
@@ -494,11 +571,15 @@
     fileInput.onchange = async () => {
       previews.innerHTML = "";
       referenceImages = [];
+      referenceFiles = [];
+
       const files = [...fileInput.files].slice(0, 3);
 
       for (const file of files) {
+        referenceFiles.push(file);
         const data = await fileToDataURL(file);
         referenceImages.push(data);
+
         const img = document.createElement("img");
         img.src = data;
         previews.appendChild(img);
@@ -523,9 +604,6 @@
       }
       if (preset === "cinematic") {
         return "ultra realistic cinematic photography, dramatic but realistic lighting, filmic detail, highly believable textures, realistic skin and anatomy";
-      }
-      if (preset === "documentary") {
-        return "ultra realistic documentary footage, natural movement, believable camera behavior, realistic lighting and skin texture";
       }
       return "ultra realistic natural photograph, realistic skin texture, highly believable lighting, accurate anatomy, true-to-life detail";
     }
@@ -576,34 +654,78 @@
     }
 
     function buildVideoPrompt(userPrompt) {
-      const realism = getRealismPrompt(document.getElementById("videoRealismPreset").value);
-      const camera = document.getElementById("cameraMotion").value;
-      const motion = document.getElementById("motionAmount").value;
+      return `Ultra realistic video. ${userPrompt}. Keep motion natural, coherent, and highly believable. Preserve realistic faces, anatomy, textures, and lighting.`;
+    }
 
-      let cameraText = "";
-      if (camera === "static") cameraText = "Use a static camera.";
-      if (camera === "handheld") cameraText = "Use realistic handheld camera movement.";
-      if (camera === "pushin") cameraText = "Use a slow push-in camera movement.";
-      if (camera === "tracking") cameraText = "Use a smooth tracking shot.";
-      if (camera === "drone") cameraText = "Use a realistic drone-style camera move.";
+    function getResultUrl(value) {
+      if (!value) return null;
+      if (typeof value === "string") return value;
+      if (value.url) return value.url;
+      if (value.path && value.path.startsWith("http")) return value.path;
+      if (value.name && value.name.startsWith("http")) return value.name;
+      return null;
+    }
 
-      let motionText = "";
-      if (motion === "subtle") motionText = "Keep movement subtle, calm and natural.";
-      if (motion === "normal") motionText = "Use natural realistic motion.";
-      if (motion === "dramatic") motionText = "Use stronger more dramatic motion while staying realistic.";
+    async function connectWanClient() {
+      if (wanClient) return wanClient;
 
-      let referenceText = "";
-      if (referenceImages.length > 0) {
-        referenceText = "Preserve the appearance of the uploaded reference image.";
+      statusText.textContent = "Connecting to Wan 2.2 video Space...";
+
+      wanClient = await Client.connect(WAN_SPACE, {
+        status_callback: (spaceStatus) => {
+          if (!spaceStatus) return;
+
+          if (spaceStatus.status === "sleeping") {
+            statusText.textContent = "Waking up the Hugging Face video Space...";
+          }
+
+          if (spaceStatus.status === "building") {
+            statusText.textContent = "The video Space is starting up...";
+          }
+
+          if (spaceStatus.status === "running") {
+            statusText.textContent = "Video Space is ready...";
+          }
+        }
+      });
+
+      return wanClient;
+    }
+
+    function showImageResult(imageNodeOrUrl) {
+      resultMedia.innerHTML = "";
+
+      if (imageNodeOrUrl instanceof HTMLElement) {
+        resultMedia.appendChild(imageNodeOrUrl);
+      } else {
+        const img = document.createElement("img");
+        img.src = imageNodeOrUrl;
+        resultMedia.appendChild(img);
       }
 
-      return `${realism}. ${userPrompt}. ${cameraText} ${motionText} ${referenceText} Keep faces, anatomy, lighting and movement realistic and coherent.`;
+      result.style.display = "block";
+      result.scrollIntoView({ behavior: "smooth" });
+    }
+
+    function showVideoResult(videoUrl) {
+      resultMedia.innerHTML = "";
+
+      const video = document.createElement("video");
+      video.controls = true;
+      video.playsInline = true;
+      video.src = videoUrl;
+
+      resultMedia.appendChild(video);
+
+      result.style.display = "block";
+      result.scrollIntoView({ behavior: "smooth" });
     }
 
     generateBtn.onclick = async () => {
       clearError();
       result.style.display = "none";
       resultMedia.innerHTML = "";
+      seedInfo.textContent = "";
 
       const userPrompt = prompt.value.trim();
       const userNegative = negativePrompt.value.trim();
@@ -618,11 +740,18 @@
         return;
       }
 
+      if (mode === "video" && referenceFiles.length === 0) {
+        showError("Upload at least one starting image for video.");
+        return;
+      }
+
       generateBtn.disabled = true;
       status.style.display = "block";
 
       try {
         if (mode === "create") {
+          if (!puter) throw new Error("Puter did not load.");
+
           statusText.textContent = "Creating image...";
 
           const model = document.getElementById("imageModel").value;
@@ -642,10 +771,12 @@
           }
 
           const image = await puter.ai.txt2img(finalPrompt, options);
-          resultMedia.appendChild(image);
+          showImageResult(image);
         }
 
         if (mode === "edit") {
+          if (!puter) throw new Error("Puter did not load.");
+
           statusText.textContent = "Editing image...";
 
           const model = document.getElementById("imageModel").value;
@@ -666,44 +797,69 @@
           }
 
           const image = await puter.ai.txt2img(finalPrompt, options);
-          resultMedia.appendChild(image);
+          showImageResult(image);
         }
 
         if (mode === "video") {
-          statusText.textContent = "Generating video...";
+          statusText.textContent = "Connecting to Wan 2.2 video model...";
 
-          const model = document.getElementById("videoModel").value;
-          const seconds = Number(document.getElementById("videoSeconds").value);
-          const size = document.getElementById("videoResolution").value;
+          const client = await connectWanClient();
+
+          statusText.textContent = "Generating video... this can take a while.";
 
           const finalPrompt = buildVideoPrompt(userPrompt);
 
-          const options = {
-            model: model,
-            seconds: seconds,
-            size: size
-          };
+          const steps = Number(document.getElementById("videoSteps").value);
+          const seconds = Number(document.getElementById("videoSeconds").value);
+          const guidance = Number(document.getElementById("videoGuidance").value);
+          const guidance2 = Number(document.getElementById("videoGuidance2").value);
+          const seed = Number(document.getElementById("videoSeed").value || 42);
+          const randomSeed = document.getElementById("videoRandomSeed").checked;
+          const videoQuality = Number(document.getElementById("videoQuality").value);
 
-          if (userNegative) {
-            options.negative_prompt = userNegative;
+          const startImage = handle_file(referenceFiles[0]);
+          const endImage = referenceFiles[1] ? handle_file(referenceFiles[1]) : null;
+
+          const resultData = await client.predict("/generate_video", [
+            startImage,
+            endImage,
+            finalPrompt,
+            steps,
+            userNegative,
+            seconds,
+            guidance,
+            guidance2,
+            seed,
+            randomSeed,
+            videoQuality
+          ]);
+
+          console.log("Wan result:", resultData);
+
+          const videoUrl =
+            getResultUrl(resultData?.data?.[0]) ||
+            getResultUrl(resultData?.data?.[1]);
+
+          const usedSeed =
+            resultData?.data?.[2];
+
+          if (!videoUrl) {
+            throw new Error("Video finished but no playable video URL was found.");
           }
 
-          if (referenceImages.length > 0) {
-            options.input_reference = referenceImages[0];
-            if (referenceImages.length > 1) {
-              options.reference_images = referenceImages;
-            }
-          }
+          showVideoResult(videoUrl);
 
-          const video = await puter.ai.txt2vid(finalPrompt, options);
-          resultMedia.appendChild(video);
+          if (usedSeed !== undefined && usedSeed !== null) {
+            seedInfo.textContent = "Seed used: " + usedSeed;
+          }
         }
 
-        result.style.display = "block";
-        result.scrollIntoView({ behavior: "smooth" });
       } catch (e) {
         console.error(e);
-        showError(e?.message || "Generation failed. You may have hit the current free allowance or chosen a provider/model that is temporarily unavailable.");
+        showError(
+          e?.message ||
+          "Generation failed. The public backend may be busy, asleep, or temporarily unavailable."
+        );
       } finally {
         status.style.display = "none";
         generateBtn.disabled = false;
